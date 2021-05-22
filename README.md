@@ -11,14 +11,17 @@ Warning: Don't use "UseModule Math" - it will break things.
 
 
 there are 4 vectors
+
 	math::vec2
 	math::vec3
 	math::vec4
 	
 a quaternion
+
 	math::quat
 	
 any many matrices
+
 	math::mat2x2
 	math::mat2x3
 	math::mat2x4
@@ -52,6 +55,7 @@ same example:
 	Debug math::string(vres)
 	
 example with a matrix:
+
 	Define.math::vec3 v
 	Define.math::vec3 vres
 	Define.math::mat3x3 m
@@ -65,6 +69,7 @@ example with a matrix:
 	Debug math::string(vres) + " = " + math::string(m) + " * " + math::string(v)
 	
 equals to
+
 	Define.math::vec3 v
 	Define.math::vec3 vres
 	Define.math::mat3x3 m
