@@ -1,3 +1,78 @@
+;
+; MATH
+;
+; a module for vectors and matrices calculation
+; translated by GPI
+;
+; Based on GLM
+; https://github.com/g-truc/glm
+;
+; Change log:
+;   1.1:  
+;         - add rotate_float, translate_float, scale_float - replace the vector with floats
+;         - replaced many macros with procedures and all procedures returns now the *res-pointer. this allows nested calls
+;           like vec3_mul(res, vec3_add(a, b,c), a) equals "a=b+c: res=a*a" equals "res = (b+c)*(b+c)"
+;         - add many vec2_*, vec3_*, vec4_* for dot, length, normalize and so on
+;         - add this comment
+;         - add "euler_angles" from glm
+;   1.0:  
+;         - first release
+;
+; ================================================================================
+; OpenGL Mathematics (GLM)
+; --------------------------------------------------------------------------------
+; GLM is licensed under The Happy Bunny License or MIT License
+;
+; ================================================================================
+; The Happy Bunny License (Modified MIT License)
+; --------------------------------------------------------------------------------
+; Copyright (c) 2005 - G-Truc Creation
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+;
+; Restrictions:
+;  By making use of the Software for military purposes, you choose to make a
+;  Bunny unhappy.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+; ================================================================================
+; The MIT License
+; --------------------------------------------------------------------------------
+; Copyright (c) 2005 - G-Truc Creation
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
 XIncludeFile "_declare__math_.pbi"
 DeclareModule math
   EnableExplicit  
@@ -167,48 +242,25 @@ Structure vec4l
     q.l
   EndStructureUnion
 EndStructure
+Structure vec2Array
+  v.vec2[0]
+EndStructure
+Structure vec3Array
+  v.vec3[0]
+EndStructure
+Structure vec4Array
+  v.vec4[0]
+EndStructure
 ;}
 ;-----------------------
 ;- type_vector.pbi
 ;{
 
-Macro vec2_set(res, xf=0.0, yf=0.0)
-  res\x = xf
-  res\y = yf
-EndMacro
 Macro vec2_const(label,xf,yf)
   DataSection
     label:
     Data.f xf, yf
   EndDataSection
-EndMacro
-Macro vec2_set_Scalar(res, s)
-  res\x = (s)
-  res\y = (s)
-EndMacro
-Macro vec2_set_vec2(res, v)
-  res\x = v\x
-  res\y = v\y
-EndMacro
-Macro vec2_set_vec3(res, v)
-  res\x = v\x
-  res\y = v\y
-EndMacro
-Macro vec2_set_vec4(res, v)
-  res\x = v\x
-  res\y = v\y
-EndMacro
-Macro vec2_let(res,v1, op, v2)
-  res\x = v1\x op v2\x
-  res\y = v1\y op v2\y
-EndMacro
-Macro vec2_let_Scalar(res, v, op, s)
-  res\x = v\x op (s)
-  res\y = v\y op (s)
-EndMacro
-Macro Scalar_let_vec2(res, s, op, v)
-  res\x = (s) op v\x
-  res\y = (s) op v\y 
 EndMacro
 Macro vec2_let_Func(res, func, v)
   res\x = func( v\x )
@@ -222,75 +274,11 @@ Macro vec2_let_Func2_Scalar(res, func, v1, s)
   res\x = func( v1\x, (s) )
   res\y = func( v1\y, (s) )
 EndMacro
-Macro vec2_isEqual(v1, v2)
-  Bool(v1\x = v2\x And v1\y = v2\y)
-EndMacro
-Macro vec2_add(res, v1, v2)
-res\x = v1\x + v2\x
-res\y = v1\y + v2\y
-EndMacro
-Macro vec2_sub(res, v1, v2)
-res\x = v1\x - v2\x
-res\y = v1\y - v2\y
-EndMacro
-Macro vec2_mul(res, v1, v2)
-res\x = v1\x * v2\x
-res\y = v1\y * v2\y
-EndMacro
-Macro vec2_div(res, v1, v2)
-res\x = v1\x / v2\x
-res\y = v1\y / v2\y
-EndMacro
-Macro vec3_set(res, xf=0.0, yf=0.0, zf=0.0)
-  res\x = xf
-  res\y = yf
-  res\z = zf
-EndMacro
 Macro vec3_const(label, xf, yf, zf)
   DataSection
     label:
     Data.f xf, yf, zf
   EndDataSection
-EndMacro
-Macro vec3_set_Scalar(res, s)
-  res\x = (s)
-  res\y = (s)
-  res\z = (s)
-EndMacro
-Macro vec3_set_vec2_f(res, xy, zf)
-  res\x = xy\x
-  res\y = xy\y
-  res\z = zf
-EndMacro
-Macro vec3_set_f_vec2(res, xf, yz)
-  res\x = f
-  res\y = yz\x
-  res\z = yz\y
-EndMacro
-Macro vec3_set_vec3(res, v)
-  res\x = v\x
-  res\y = v\y
-  res\z = v\z
-EndMacro
-Macro vec3_set_vec4(res, v)
-  res\x = v\x
-  res\y = v\y
-  res\z = v\z
-EndMacro
-Macro vec3_let(res,v1, op, v2)
-  res\x = v1\x op v2\x
-  res\y = v1\y op v2\y
-  res\z = v1\z op v2\z
-EndMacro
-Macro vec3_let_Scalar(res, v, op, s)
-  res\x = v\x op (s)
-  res\y = v\y op (s)
-  res\z = v\z op (s)
-EndMacro
-Macro Scalar_let_vec3(res, s, op, v)
-  res\x = (s) op v\x 
-  res\y = (s) op v\y
-  res\z = (s) op v\z
 EndMacro
 Macro vec3_let_Func(res, func, v)
   res\x = func( v\x )
@@ -307,82 +295,11 @@ Macro vec3_let_Func2_Scalar(res, func, v1, s)
   res\y = func( v1\y, (s) )
   res\z = func( v1\z, (s) )
 EndMacro
-Macro vec3_isEqual(v1, v2)
-  Bool(v1\x = v2\x And v1\y = v2\y And v1\z = v2\z)
-EndMacro
-Macro vec3_add(res, v1, v2)
-res\x = v1\x + v2\x
-res\y = v1\y + v2\y
-res\z = v1\z + v2\z
-EndMacro
-Macro vec3_sub(res, v1, v2)
-res\x = v1\x - v2\x
-res\y = v1\y - v2\y
-res\z = v1\z - v2\z
-EndMacro
-Macro vec3_mul(res, v1, v2)
-res\x = v1\x * v2\x
-res\y = v1\y * v2\y
-res\z = v1\z * v2\z
-EndMacro
-Macro vec3_div(res, v1, v2)
-res\x = v1\x / v2\x
-res\y = v1\y / v2\y
-res\z = v1\z / v2\z
-EndMacro
-Macro vec4_set(res, xf=0.0, yf=0.0, zf=0.0, wf=0.0)
-  res\x = xf
-  res\y = yf
-  res\z = zf
-  res\w = wf
-EndMacro
 Macro vec4_const(label, xf, yf, zf, wf)
   DataSection
     label:
     Data.f xf, yf, zf, wf
   EndDataSection
-EndMacro
-Macro vec4_set_Scalar(res, s)
-  res\x = (s)
-  res\y = (s)
-  res\z = (s)
-  res\w = (s)
-EndMacro
-Macro vec4_set_vec3_f(res, xyz, wf)
-  res\x = xyz\x
-  res\y = xyz\y
-  res\z = xyz\z
-  res\w = wf
-EndMacro
-Macro vec4_set_f_vec3(res, xf, yzw)
-  res\x = f
-  res\y = yz\x
-  res\z = yz\y
-  res\w = yz\z
-EndMacro
-Macro vec4_set_vec4(res, v)
-  res\x = v\x
-  res\y = v\y
-  res\z = v\z
-  res\w = v\w
-EndMacro
-Macro vec4_let(res,v1, op, v2)
-  res\x = v1\x op v2\x
-  res\y = v1\y op v2\y
-  res\z = v1\z op v2\z
-  res\w = v1\w op v2\w
-EndMacro
-Macro vec4_let_Scalar(res, v, op, s)
-  res\x = v\x op (s)
-  res\y = v\y op (s)
-  res\z = v\z op (s)
-  res\w = v\w op (s)
-EndMacro
-Macro Scalar_let_vec4(res, s, op, v)
-  res\x = (s) op v\x 
-  res\y = (s) op v\y 
-  res\z = (s) op v\z 
-  res\w = (s) op v\w 
 EndMacro
 Macro vec4_let_Func(res, func, v)
   res\x = func( v\x )
@@ -402,33 +319,60 @@ Macro vec4_let_Func2_scalar(res, func, v1, s)
   res\z = func( v1\z, (s) )
   res\w = func( v1\w, (s) )
 EndMacro
-Macro vec4_isEqual(v1, v2)
-  Bool(v1\x = v2\x And v1\y = v2\y And v1\z = v2\z And v1\w = v2\w)
-EndMacro
-Macro vec4_add(res, v1, v2)
-res\x = v1\x + v2\x
-res\y = v1\y + v2\y
-res\z = v1\z + v2\z
-res\w = v1\w + v2\w
-EndMacro
-Macro vec4_sub(res, v1, v2)
-res\x = v1\x - v2\x
-res\y = v1\y - v2\y
-res\z = v1\z - v2\z
-res\w = v1\w - v2\w
-EndMacro
-Macro vec4_mul(res, v1, v2)
-res\x = v1\x * v2\x
-res\y = v1\y * v2\y
-res\z = v1\z * v2\z
-res\w = v1\w * v2\w
-EndMacro
-Macro vec4_div(res, v1, v2)
-res\x = v1\x / v2\x
-res\y = v1\y / v2\y
-res\z = v1\z / v2\z
-res\w = v1\w / v2\w
-EndMacro
+Declare vec2_set_float(*res.vec2, x.f=0.0, y.f=0.0)
+Declare vec2_set_Scalar(*res.vec2, s.f)
+Declare vec2_set(*res.vec2, *v.vec2)
+Declare vec2_set_vec3(*res.vec2, *v.vec3)
+Declare vec2_set_vec4(*res.vec2, *v.vec4)
+Declare vec2_add(*res.vec2, *v1.vec2, *v2.vec2)
+Declare vec2_sub(*res.vec2, *v1.vec2, *v2.vec2)
+Declare vec2_mul(*res.vec2, *v1.vec2, *v2.vec2)
+Declare vec2_div(*res.vec2, *v1.vec2, *v2.vec2)
+Declare vec2_add_scalar(*res.vec2, *v1.vec2, s.f)
+Declare vec2_sub_scalar(*res.vec2, *v1.vec2, s.f)
+Declare vec2_mul_scalar(*res.vec2, *v1.vec2, s.f)
+Declare vec2_div_scalar(*res.vec2, *v1.vec2, s.f)
+Declare scalar_add_vec2(*res.vec2, s.f, *v1.vec2)
+Declare scalar_sub_vec2(*res.vec2, s.f, *v1.vec2)
+Declare scalar_mul_vec2(*res.vec2, s.f, *v1.vec2)
+Declare scalar_div_vec2(*res.vec2, s.f, *v1.vec2)
+Declare.l vec2_isEqual(*v1.vec2, *v2.vec2)
+Declare vec3_set_float(*res.vec3, x.f=0.0, y.f=0.0, z.f=0.0)
+Declare vec3_set_Scalar(*res.vec3, s.f)
+Declare vec3_set_vec2(*res.vec3, *v.vec2, f.f)
+Declare vec3_set(*res.vec3, *v.vec3)
+Declare vec3_set_vec4(*res.vec3, *v.vec4)
+Declare vec3_add(*res.vec3, *v1.vec3, *v2.vec3)
+Declare vec3_sub(*res.vec3, *v1.vec3, *v2.vec3)
+Declare vec3_mul(*res.vec3, *v1.vec3, *v2.vec3)
+Declare vec3_div(*res.vec3, *v1.vec3, *v2.vec3)
+Declare vec3_add_scalar(*res.vec3, *v1.vec3, s.f)
+Declare vec3_sub_scalar(*res.vec3, *v1.vec3, s.f)
+Declare vec3_mul_scalar(*res.vec3, *v1.vec3, s.f)
+Declare vec3_div_scalar(*res.vec3, *v1.vec3, s.f)
+Declare scalar_add_vec3(*res.vec3, s.f, *v1.vec3)
+Declare scalar_sub_vec3(*res.vec3, s.f, *v1.vec3)
+Declare scalar_mul_vec3(*res.vec3, s.f, *v1.vec3)
+Declare scalar_div_vec3(*res.vec3, s.f, *v1.vec3)
+Declare.l vec3_isEqual(*v1.vec3, *v2.vec3)
+Declare vec4_set_float(*res.vec4, x.f=0.0, y.f=0.0, z.f=0.0, w.f=0.0)
+Declare vec4_set_Scalar(*res.vec4, s.f)
+Declare vec4_set_vec2(*res.vec4, *v1.vec2, *v2.vec2)
+Declare vec4_set_vec3(*res.vec4, *v.vec3, f.f)
+Declare vec4_set(*res.vec4, *v.vec4)
+Declare vec4_add(*res.vec4, *v1.vec4, *v2.vec4)
+Declare vec4_sub(*res.vec4, *v1.vec4, *v2.vec4)
+Declare vec4_mul(*res.vec4, *v1.vec4, *v2.vec4)
+Declare vec4_div(*res.vec4, *v1.vec4, *v2.vec4)
+Declare vec4_add_scalar(*res.vec4, *v1.vec4, s.f)
+Declare vec4_sub_scalar(*res.vec4, *v1.vec4, s.f)
+Declare vec4_mul_scalar(*res.vec4, *v1.vec4, s.f)
+Declare vec4_div_scalar(*res.vec4, *v1.vec4, s.f)
+Declare scalar_add_vec4(*res.vec4, s.f, *v1.vec4)
+Declare scalar_sub_vec4(*res.vec4, s.f, *v1.vec4)
+Declare scalar_mul_vec4(*res.vec4, s.f, *v1.vec4)
+Declare scalar_div_vec4(*res.vec4, s.f, *v1.vec4)
+Declare.l vec4_isEqual(*v1.vec4, *v2.vec4)
 ;}
 ;-----------------------
 ;- func_exponential.pbi
@@ -442,74 +386,88 @@ Declare.f log2_f(value.f)
 Declare.f sqrt_f(a.f)
 Declare.f inversesqrt_f(f.f)
 Macro inversesqrt(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    CompilerError "[inversesqrt] quat not supported"
-  CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@inversesqrt_f(), v)
 EndMacro
 Macro Pow(res, base, exponent)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(base\__type0__)&1)<<0) +((TypeOf(base\__type1__)&1)<<1) +((TypeOf(base\__type2__)&1)<<2) + ((TypeOf(base\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-    math::quat_pow(res, base, exponent)
-  CompilerElse
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(base\__type0__)&1)<<0) +((TypeOf(base\__type1__)&1)<<1) +((TypeOf(base\__type2__)&1)<<2) + ((TypeOf(base\__type3__)&1)<<3)); when exponent is added, the compiler could crash
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@pow_f(), base, exponent)
-  CompilerEndIf
 EndMacro
 Macro Exp(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    math::quat_exp(res, x)
-  CompilerElse
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@exp_f(), x)
-  CompilerEndIf
 EndMacro
 Macro Log(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    math::quat_Log(res, x)
-  CompilerElse    
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@log_f(), x)
-  CompilerEndIf
 EndMacro
 Macro Exp2(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    CompilerError "[Exp2] quat not supported"
-  CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@exp2_f(), x)
 EndMacro
 Macro Log2(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    CompilerError "[Log2] quat not supported"
-  CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@log2_f(), x)
 EndMacro
 Macro sqrt(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    math::quat_sqrt(res, x)
-  CompilerElse
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@sqrt_f(), x)
-  CompilerEndIf 
+EndMacro
+Macro Vec2_inversesqrt(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@inversesqrt_f(), v)
+EndMacro
+Macro Vec2_Pow(res, base, exponent)
+  _math::compute_function2(res, math::#type_vec2, math::@pow_f(), base, exponent)
+EndMacro
+Macro Vec2_Exp(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@exp_f(), x)
+EndMacro
+Macro Vec2_Log(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@log_f(), x)
+EndMacro
+Macro Vec2_Exp2(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@exp2_f(), x)
+EndMacro
+Macro Vec2_Log2(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@log2_f(), x)
+EndMacro
+Macro Vec2_sqrt(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@sqrt_f(), x)
+EndMacro
+Macro Vec3_inversesqrt(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@inversesqrt_f(), v)
+EndMacro
+Macro Vec3_Pow(res, base, exponent)
+  _math::compute_function2(res, math::#type_vec3, math::@pow_f(), base, exponent)
+EndMacro
+Macro Vec3_Exp(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@exp_f(), x)
+EndMacro
+Macro Vec3_Log(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@log_f(), x)
+EndMacro
+Macro Vec3_Exp2(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@exp2_f(), x)
+EndMacro
+Macro Vec3_Log2(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@log2_f(), x)
+EndMacro
+Macro Vec3_sqrt(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@sqrt_f(), x)
+EndMacro
+Macro Vec4_inversesqrt(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@inversesqrt_f(), v)
+EndMacro
+Macro Vec4_Pow(res, base, exponent)
+  _math::compute_function2(res, math::#type_vec4, math::@pow_f(), base, exponent)
+EndMacro
+Macro Vec4_Exp(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@exp_f(), x)
+EndMacro
+Macro Vec4_Log(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@log_f(), x)
+EndMacro
+Macro Vec4_Exp2(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@exp2_f(), x)
+EndMacro
+Macro Vec4_Log2(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@log2_f(), x)
+EndMacro
+Macro Vec4_sqrt(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@sqrt_f(), x)
 EndMacro
 ;}
 ;-----------------------
@@ -536,171 +494,81 @@ Declare.f Ceil_f(x.f)
 Declare.f Abs_f(x.f)
 Declare.f sign_f(x.f)
 Macro Modf(res, v, Resi)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) +((TypeOf(v\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(Resi\__type0__)&1)<<0) +((TypeOf(Resi\__type1__)&1)<<1) +((TypeOf(Resi\__type2__)&1)<<2) + ((TypeOf(Resi\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2p(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@modf_f(), v, Resi)
 EndMacro
 Macro frexp(res, v, Resi)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) +((TypeOf(v\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(Resi\__type0__)&1)<<0) +((TypeOf(Resi\__type1__)&1)<<1) +((TypeOf(Resi\__type2__)&1)<<2) + ((TypeOf(Resi\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2p(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@frexp_f(), v, Resi)
 EndMacro
 Macro ldexp(res, x, exp)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(exp\__type0__)&1)<<0) +((TypeOf(exp\__type1__)&1)<<1) +((TypeOf(exp\__type2__)&1)<<2) + ((TypeOf(exp\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@ldexp_f(), x, exp)
 EndMacro
 Macro Abs(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@abs_f(), x)
 EndMacro
 Macro Sign(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@sign_f(), x)
 EndMacro
 Macro Floor(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@Floor_f(), x)
 EndMacro
 Macro Ceil(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@Ceil_f(), x)
 EndMacro
 Macro fract(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@fract_f(), x)
 EndMacro
 Macro roundEven(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@roundEven_f(), x)
 EndMacro
 Macro trunc(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@trunc_f(), x)
 EndMacro
 Macro Round(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@round_f(), x)
 EndMacro
 Macro Mod(res, x, y)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@mod_f(), x, y)
 EndMacro
 Macro Mod_Scalar(res, x, scalar)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2s(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@mod_f(), x, scalar)
 EndMacro
 Macro min(res, x, y)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), _math::@min2_f(), x, y)
 EndMacro
 Macro min_Scalar(res, x, scalar)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2s(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), _math::@min2_f(), x, scalar)
 EndMacro
 Macro max(res, x, y)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), _math::@max2_f(), x, y)
 EndMacro
 Macro max_Scalar(res, x, scalar)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2s(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), _math::@max2_f(), x, scalar)
 EndMacro
 Macro clamp(res, x, y, z)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) +((TypeOf(y\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(z\__type0__)&1)<<0) +((TypeOf(z\__type1__)&1)<<1) +((TypeOf(z\__type2__)&1)<<2) + ((TypeOf(z\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function3(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@clamp_f(), x, y, z)
 EndMacro
 Macro clamp_Scalar(res, x, min=0, max=1)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function3s(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@clamp_f(), x, min, max)
 EndMacro
 Macro Repeat(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@repeat_f(), x)
 EndMacro
 Macro mirrorClamp(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@repeat_f(), x)
 EndMacro
 Macro mirrorRepeat(res, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@repeat_f(), x)
 EndMacro
 Macro vec_Step(res, edge, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) > math::#type_vecmax
-CompilerError "Type must be vector!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(edge\__type0__)&1)<<0) +((TypeOf(edge\__type1__)&1)<<1) +((TypeOf(edge\__type2__)&1)<<2) + ((TypeOf(edge\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::vec_Step_Vector(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), edge, x)
 EndMacro
 Macro vec_Step_Scalar(res, edgeScalar, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) > math::#type_vecmax
-CompilerError "Type must be vector!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::vec_Step_Vector_Scalar(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), edgeScalar, x)
 EndMacro
 Macro smoothstep(res, edge0, edge1, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) > math::#type_vecmax
-CompilerError "Type must be vector!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(edge0\__type0__)&1)<<0) +((TypeOf(edge0\__type1__)&1)<<1) +((TypeOf(edge0\__type2__)&1)<<2) +((TypeOf(edge0\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(edge1\__type0__)&1)<<0) +((TypeOf(edge1\__type1__)&1)<<1) +((TypeOf(edge1\__type2__)&1)<<2) + ((TypeOf(edge1\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::vec_smoothstep_vector(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), edge0, edge1, x)
 EndMacro
 Macro smoothstep_Scalar(res, edge0Scalar, edge1Scalar, x)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) > math::#type_vecmax
-CompilerError "Type must be vector!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::vec_smoothstep_vector_Scalar(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), edge0Scalar, edge1Scalar, x)
 EndMacro
 Macro string(x,nbdecimals = 2)
@@ -710,20 +578,10 @@ Macro stringBool(x)
 _math::stringBool(x,(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3)))
 EndMacro
 Macro IsNAN(resBool, x)
-CompilerIf(((TypeOf(resbool\__type0__)&1)<<0) +((TypeOf(resbool\__type1__)&1)<<1) +((TypeOf(resbool\__type2__)&1)<<2) +((TypeOf(resbool\__type3__)&1)<<3)) =(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3)) Or
-((((TypeOf(resbool\__type0__)&1)<<0) +((TypeOf(resbool\__type1__)&1)<<1) +((TypeOf(resbool\__type2__)&1)<<2) +((TypeOf(resbool\__type3__)&1)<<3)) = math::#type_vec4 And(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3)) = math::#type_quat)
 _math::is_Nan(resbool,(((TypeOf(resbool\__type0__)&1)<<0) +((TypeOf(resbool\__type1__)&1)<<1) +((TypeOf(resbool\__type2__)&1)<<2) + ((TypeOf(resbool\__type3__)&1)<<3)), x)
-  CompilerElse
-    CompilerError "Type missmatch"
-  CompilerEndIf
 EndMacro
 Macro isInf(resBool, x)
-CompilerIf(((TypeOf(resbool\__type0__)&1)<<0) +((TypeOf(resbool\__type1__)&1)<<1) +((TypeOf(resbool\__type2__)&1)<<2) +((TypeOf(resbool\__type3__)&1)<<3)) =(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3)) Or
-((((TypeOf(resbool\__type0__)&1)<<0) +((TypeOf(resbool\__type1__)&1)<<1) +((TypeOf(resbool\__type2__)&1)<<2) +((TypeOf(resbool\__type3__)&1)<<3)) = math::#type_vec4 And(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3)) = math::#type_quat)
 _math::is_Inf(resbool,(((TypeOf(resbool\__type0__)&1)<<0) +((TypeOf(resbool\__type1__)&1)<<1) +((TypeOf(resbool\__type2__)&1)<<2) + ((TypeOf(resbool\__type3__)&1)<<3)), x)
-  CompilerElse
-    CompilerError "Type missmatch"
-  CompilerEndIf
 EndMacro
 Macro any(bool)
 _math::bool_any(bool,(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) + ((TypeOf(bool\__type3__)&1)<<3)))
@@ -732,33 +590,18 @@ Macro all(bool)
 _math::bool_all(bool,(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) + ((TypeOf(bool\__type3__)&1)<<3)))
 EndMacro
 Macro Bool_not(resBool, Bool)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) + ((TypeOf(bool\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::Bool_not(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),bool)
 EndMacro
 Macro Bool_and(resBool, Bool)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) + ((TypeOf(bool\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::Bool_and(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),bool)
 EndMacro
 Macro Bool_or(resBool, Bool)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) + ((TypeOf(bool\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::Bool_or(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),bool)
 EndMacro
 Macro equal(resBool, x, y, epsilon = math::#epsilon)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::equal(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),x,y,epsilon)
 EndMacro
 Macro notEqual(resBool, x, y, epsilon = math::#epsilon)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::notEqual(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),x,y,epsilon)
 EndMacro
 Macro all_equal( x, y, epsilon = math::#epsilon)
@@ -768,58 +611,27 @@ Macro any_notEqual( x, y, epsilon = math::#epsilon)
 _math::do_any(_math::@notEqual(),(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) + ((TypeOf(x\__type3__)&1)<<3)),x,y,epsilon)
 EndMacro
 Macro lessThan(resBool, x, y)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::lessThan(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),x,y)
 EndMacro
 Macro lessThanEqual(resBool, x, y)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::lessThanEqual(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),x,y)
 EndMacro
 Macro greaterThan(resBool, x, y)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::greaterThan(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),x,y)
 EndMacro
 Macro greaterThanEqual(resBool, x, y)
-CompilerIf(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) +((TypeOf(resBool\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::greaterThanEqual(resBool,(((TypeOf(resBool\__type0__)&1)<<0) +((TypeOf(resBool\__type1__)&1)<<1) +((TypeOf(resBool\__type2__)&1)<<2) + ((TypeOf(resBool\__type3__)&1)<<3)),x,y)
 EndMacro
 Macro long_from_float(bool,matvec)
-CompilerIf(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) +((TypeOf(bool\__type3__)&1)<<3)) <>(((TypeOf(matvec\__type0__)&1)<<0) +((TypeOf(matvec\__type1__)&1)<<1) +((TypeOf(matvec\__type2__)&1)<<2) + ((TypeOf(matvec\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::long_from_float(bool,(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) + ((TypeOf(bool\__type3__)&1)<<3)),matvec)
 EndMacro
 Macro float_from_long(matvec, bool)
-CompilerIf(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) +((TypeOf(bool\__type3__)&1)<<3)) <>(((TypeOf(matvec\__type0__)&1)<<0) +((TypeOf(matvec\__type1__)&1)<<1) +((TypeOf(matvec\__type2__)&1)<<2) + ((TypeOf(matvec\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-_math::float_from_long(matvec,(((TypeOf(matvec\__type0__)&1)<<0) +((TypeOf(matvec\__type1__)&1)<<1) +((TypeOf(matvec\__type2__)&1)<<2) + ((TypeOf(matvec\__type3__)&1)<<3)), bool)
+_math::float_from_long(matvec,(((TypeOf(bool\__type0__)&1)<<0) +((TypeOf(bool\__type1__)&1)<<1) +((TypeOf(bool\__type2__)&1)<<2) + ((TypeOf(bool\__type3__)&1)<<3)), bool)
 EndMacro
 Macro mix_Scalar(res, x, y, A)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    math::quat_mix(res, x, y, a)
-  CompilerElse
 _math::compute_mix_scalar(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), x, y, a)
-  CompilerEndIf
 EndMacro
 Macro mix(res, x, y, A)  
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) +((TypeOf(y\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(a\__type0__)&1)<<0) +((TypeOf(a\__type1__)&1)<<1) +((TypeOf(a\__type2__)&1)<<2) + ((TypeOf(a\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    CompilerError "Quat only support mix_scalar"
-  CompilerEndIf
 _math::compute_mix(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), x, y, a)
 EndMacro
 Macro min_f(a,b,c=NaN(), d=NaN())
@@ -827,6 +639,429 @@ Macro min_f(a,b,c=NaN(), d=NaN())
 EndMacro
 Macro max_f(a,b,c=NaN(), d=NaN())
   _math::max_f(a,b,c,d)
+EndMacro
+Macro Vec2_Modf(res, v, Resi)
+  _math::compute_function2p(res, math::#type_vec2, math::@modf_f(), v, Resi)
+EndMacro
+Macro Vec2_frexp(res, v, Resi)
+  _math::compute_function2p(res, math::#type_vec2, math::@frexp_f(), v, Resi)
+EndMacro
+Macro Vec2_ldexp(res, x, exp)
+  _math::compute_function2(res, math::#type_vec2, math::@ldexp_f(), x, exp)
+EndMacro
+Macro Vec2_Abs(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@abs_f(), x)
+EndMacro
+Macro Vec2_Sign(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@sign_f(), x)
+EndMacro
+Macro Vec2_Floor(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@Floor_f(), x)
+EndMacro
+Macro Vec2_Ceil(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@Ceil_f(), x)
+EndMacro
+Macro Vec2_fract(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@fract_f(), x)
+EndMacro
+Macro Vec2_roundEven(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@roundEven_f(), x)
+EndMacro
+Macro Vec2_trunc(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@trunc_f(), x)
+EndMacro
+Macro Vec2_Round(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@round_f(), x)
+EndMacro
+Macro Vec2_Mod(res, x, y)
+  _math::compute_function2(res, math::#type_vec2, math::@mod_f(), x, y)
+EndMacro
+Macro Vec2_Mod_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec2, math::@mod_f(), x, scalar)
+EndMacro
+Macro Vec2_min(res, x, y)
+  _math::compute_function2(res, math::#type_vec2, _math::@min2_f(), x, y)
+EndMacro
+Macro Vec2_min_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec2, _math::@min2_f(), x, scalar)
+EndMacro
+Macro Vec2_max(res, x, y)
+  _math::compute_function2(res, math::#type_vec2, _math::@max2_f(), x, y)
+EndMacro
+Macro Vec2_max_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec2, _math::@max2_f(), x, scalar)
+EndMacro
+Macro Vec2_clamp(res, x, y, z)
+  _math::compute_function3(res, math::#type_vec2, math::@clamp_f(), x, y, z)
+EndMacro
+Macro Vec2_clamp_Scalar(res, x, min=0, max=1)
+  _math::compute_function3s(res, math::#type_vec2, math::@clamp_f(), x, min, max)
+EndMacro
+Macro Vec2_Repeat(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@repeat_f(), x)
+EndMacro
+Macro Vec2_mirrorClamp(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@repeat_f(), x)
+EndMacro
+Macro Vec2_mirrorRepeat(res, x)
+  _math::compute_function1(res, math::#type_vec2, math::@repeat_f(), x)
+EndMacro
+Macro Vec2_vec_Step(res, edge, x)
+  _math::vec_Step_Vector(res, math::#type_vec2, edge, x)
+EndMacro
+Macro Vec2_vec_Step_Scalar(res, edgeScalar, x)
+  _math::vec_Step_Vector_Scalar(res, math::#type_vec2, edgeScalar, x)
+EndMacro
+Macro Vec2_smoothstep(res, edge0, edge1, x)
+  _math::vec_smoothstep_vector(res, math::#type_vec2, edge0, edge1, x)
+EndMacro
+Macro Vec2_smoothstep_Scalar(res, edge0Scalar, edge1Scalar, x)
+  _math::vec_smoothstep_vector_Scalar(res, math::#type_vec2, edge0Scalar, edge1Scalar, x)
+EndMacro
+Macro Vec2_string(x,nbdecimals = 2)
+  _math::string(x, math::#type_vec2, nbdecimals)
+EndMacro
+Macro Vec2_stringBool(x)
+  _math::stringBool(x, math::#type_vec2)
+EndMacro
+Macro Vec2_IsNAN(resBool, x)
+  _math::is_Nan(resbool, math::#type_vec2, x)
+EndMacro
+Macro Vec2_isInf(resBool, x)
+  _math::is_Inf(resbool, math::#type_vec2, x)
+EndMacro
+Macro Vec2_any(bool)
+  _math::bool_any(bool,math::#type_vec2)
+EndMacro
+Macro Vec2_all(bool)
+  _math::bool_all(bool,math::#type_vec2)
+EndMacro
+Macro Vec2_Bool_not(resBool, Bool)
+  _math::Bool_not(resBool,math::#type_vec2,bool)
+EndMacro
+Macro Vec2_Bool_and(resBool, Bool)
+  _math::Bool_and(resBool,math::#type_vec2,bool)
+EndMacro
+Macro Vec2_Bool_or(resBool, Bool)
+  _math::Bool_or(resBool,math::#type_vec2,bool)
+EndMacro
+Macro Vec2_equal(resBool, x, y, epsilon = math::#epsilon)
+  _math::equal(resBool,math::#type_vec2,x,y,epsilon)
+EndMacro
+Macro Vec2_notEqual(resBool, x, y, epsilon = math::#epsilon)
+  _math::notEqual(resBool,math::#type_vec2,x,y,epsilon)
+EndMacro
+Macro Vec2_all_equal( x, y, epsilon = math::#epsilon)
+  _math::do_all(_math::@equal(),math::#type_vec2,x,y,epsilon)
+EndMacro
+Macro Vec2_any_notEqual( x, y, epsilon = math::#epsilon)
+  _math::do_any(_math::@notEqual(),math::#type_vec2,x,y,epsilon)
+EndMacro
+Macro Vec2_lessThan(resBool, x, y)
+  _math::lessThan(resBool,math::#type_vec2,x,y)
+EndMacro
+Macro Vec2_lessThanEqual(resBool, x, y)
+  _math::lessThanEqual(resBool,math::#type_vec2,x,y)
+EndMacro
+Macro Vec2_greaterThan(resBool, x, y)
+  _math::greaterThan(resBool,math::#type_vec2,x,y)
+EndMacro
+Macro Vec2_greaterThanEqual(resBool, x, y)
+  _math::greaterThanEqual(resBool,math::#type_vec2,x,y)
+EndMacro
+Macro Vec2_long_from_float(bool,matvec)
+  _math::long_from_float(bool,math::#type_vec2,matvec)
+EndMacro
+Macro Vec2_float_from_long(matvec, bool)
+  _math::float_from_long(matvec,math::#type_vec2, bool)
+EndMacro
+Macro Vec2_mix_Scalar(res, x, y, A)
+  _math::compute_mix_scalar(res, math::#type_vec2, x, y, a)
+EndMacro
+Macro Vec2_mix(res, x, y, A)
+  _math::compute_mix(res, math::#type_vec2, x, y, a)
+EndMacro
+Macro Vec3_Modf(res, v, Resi)
+  _math::compute_function2p(res, math::#type_vec3, math::@modf_f(), v, Resi)
+EndMacro
+Macro Vec3_frexp(res, v, Resi)
+  _math::compute_function2p(res, math::#type_vec3, math::@frexp_f(), v, Resi)
+EndMacro
+Macro Vec3_ldexp(res, x, exp)
+  _math::compute_function2(res, math::#type_vec3, math::@ldexp_f(), x, exp)
+EndMacro
+Macro Vec3_Abs(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@abs_f(), x)
+EndMacro
+Macro Vec3_Sign(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@sign_f(), x)
+EndMacro
+Macro Vec3_Floor(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@Floor_f(), x)
+EndMacro
+Macro Vec3_Ceil(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@Ceil_f(), x)
+EndMacro
+Macro Vec3_fract(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@fract_f(), x)
+EndMacro
+Macro Vec3_roundEven(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@roundEven_f(), x)
+EndMacro
+Macro Vec3_trunc(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@trunc_f(), x)
+EndMacro
+Macro Vec3_Round(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@round_f(), x)
+EndMacro
+Macro Vec3_Mod(res, x, y)
+  _math::compute_function2(res, math::#type_vec3, math::@mod_f(), x, y)
+EndMacro
+Macro Vec3_Mod_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec3, math::@mod_f(), x, scalar)
+EndMacro
+Macro Vec3_min(res, x, y)
+  _math::compute_function2(res, math::#type_vec3, _math::@min2_f(), x, y)
+EndMacro
+Macro Vec3_min_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec3, _math::@min2_f(), x, scalar)
+EndMacro
+Macro Vec3_max(res, x, y)
+  _math::compute_function2(res, math::#type_vec3, _math::@max2_f(), x, y)
+EndMacro
+Macro Vec3_max_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec3, _math::@max2_f(), x, scalar)
+EndMacro
+Macro Vec3_clamp(res, x, y, z)
+  _math::compute_function3(res, math::#type_vec3, math::@clamp_f(), x, y, z)
+EndMacro
+Macro Vec3_clamp_Scalar(res, x, min=0, max=1)
+  _math::compute_function3s(res, math::#type_vec3, math::@clamp_f(), x, min, max)
+EndMacro
+Macro Vec3_Repeat(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@repeat_f(), x)
+EndMacro
+Macro Vec3_mirrorClamp(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@repeat_f(), x)
+EndMacro
+Macro Vec3_mirrorRepeat(res, x)
+  _math::compute_function1(res, math::#type_vec3, math::@repeat_f(), x)
+EndMacro
+Macro Vec3_vec_Step(res, edge, x)
+  _math::vec_Step_Vector(res, math::#type_vec3, edge, x)
+EndMacro
+Macro Vec3_vec_Step_Scalar(res, edgeScalar, x)
+  _math::vec_Step_Vector_Scalar(res, math::#type_vec3, edgeScalar, x)
+EndMacro
+Macro Vec3_smoothstep(res, edge0, edge1, x)
+  _math::vec_smoothstep_vector(res, math::#type_vec3, edge0, edge1, x)
+EndMacro
+Macro Vec3_smoothstep_Scalar(res, edge0Scalar, edge1Scalar, x)
+  _math::vec_smoothstep_vector_Scalar(res, math::#type_vec3, edge0Scalar, edge1Scalar, x)
+EndMacro
+Macro Vec3_string(x,nbdecimals = 2)
+  _math::string(x, math::#type_vec3, nbdecimals)
+EndMacro
+Macro Vec3_stringBool(x)
+  _math::stringBool(x, math::#type_vec3)
+EndMacro
+Macro Vec3_IsNAN(resBool, x)
+  _math::is_Nan(resbool, math::#type_vec3, x)
+EndMacro
+Macro Vec3_isInf(resBool, x)
+  _math::is_Inf(resbool, math::#type_vec3, x)
+EndMacro
+Macro Vec3_any(bool)
+  _math::bool_any(bool,math::#type_vec3)
+EndMacro
+Macro Vec3_all(bool)
+  _math::bool_all(bool,math::#type_vec3)
+EndMacro
+Macro Vec3_Bool_not(resBool, Bool)
+  _math::Bool_not(resBool,math::#type_vec3,bool)
+EndMacro
+Macro Vec3_Bool_and(resBool, Bool)
+  _math::Bool_and(resBool,math::#type_vec3,bool)
+EndMacro
+Macro Vec3_Bool_or(resBool, Bool)
+  _math::Bool_or(resBool,math::#type_vec3,bool)
+EndMacro
+Macro Vec3_equal(resBool, x, y, epsilon = math::#epsilon)
+  _math::equal(resBool,math::#type_vec3,x,y,epsilon)
+EndMacro
+Macro Vec3_notEqual(resBool, x, y, epsilon = math::#epsilon)
+  _math::notEqual(resBool,math::#type_vec3,x,y,epsilon)
+EndMacro
+Macro Vec3_all_equal( x, y, epsilon = math::#epsilon)
+  _math::do_all(_math::@equal(),math::#type_vec3,x,y,epsilon)
+EndMacro
+Macro Vec3_any_notEqual( x, y, epsilon = math::#epsilon)
+  _math::do_any(_math::@notEqual(),math::#type_vec3,x,y,epsilon)
+EndMacro
+Macro Vec3_lessThan(resBool, x, y)
+  _math::lessThan(resBool,math::#type_vec3,x,y)
+EndMacro
+Macro Vec3_lessThanEqual(resBool, x, y)
+  _math::lessThanEqual(resBool,math::#type_vec3,x,y)
+EndMacro
+Macro Vec3_greaterThan(resBool, x, y)
+  _math::greaterThan(resBool,math::#type_vec3,x,y)
+EndMacro
+Macro Vec3_greaterThanEqual(resBool, x, y)
+  _math::greaterThanEqual(resBool,math::#type_vec3,x,y)
+EndMacro
+Macro Vec3_long_from_float(bool,matvec)
+  _math::long_from_float(bool,math::#type_vec3,matvec)
+EndMacro
+Macro Vec3_float_from_long(matvec, bool)
+  _math::float_from_long(matvec,math::#type_vec3, bool)
+EndMacro
+Macro Vec3_mix_Scalar(res, x, y, A)
+  _math::compute_mix_scalar(res, math::#type_vec3, x, y, a)
+EndMacro
+Macro Vec3_mix(res, x, y, A)
+  _math::compute_mix(res, math::#type_vec3, x, y, a)
+EndMacro
+Macro Vec4_Modf(res, v, Resi)
+  _math::compute_function2p(res, math::#type_vec4, math::@modf_f(), v, Resi)
+EndMacro
+Macro Vec4_frexp(res, v, Resi)
+  _math::compute_function2p(res, math::#type_vec4, math::@frexp_f(), v, Resi)
+EndMacro
+Macro Vec4_ldexp(res, x, exp)
+  _math::compute_function2(res, math::#type_vec4, math::@ldexp_f(), x, exp)
+EndMacro
+Macro Vec4_Abs(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@abs_f(), x)
+EndMacro
+Macro Vec4_Sign(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@sign_f(), x)
+EndMacro
+Macro Vec4_Floor(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@Floor_f(), x)
+EndMacro
+Macro Vec4_Ceil(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@Ceil_f(), x)
+EndMacro
+Macro Vec4_fract(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@fract_f(), x)
+EndMacro
+Macro Vec4_roundEven(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@roundEven_f(), x)
+EndMacro
+Macro Vec4_trunc(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@trunc_f(), x)
+EndMacro
+Macro Vec4_Round(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@round_f(), x)
+EndMacro
+Macro Vec4_Mod(res, x, y)
+  _math::compute_function2(res, math::#type_vec4, math::@mod_f(), x, y)
+EndMacro
+Macro Vec4_Mod_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec4, math::@mod_f(), x, scalar)
+EndMacro
+Macro Vec4_min(res, x, y)
+  _math::compute_function2(res, math::#type_vec4, _math::@min2_f(), x, y)
+EndMacro
+Macro Vec4_min_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec4, _math::@min2_f(), x, scalar)
+EndMacro
+Macro Vec4_max(res, x, y)
+  _math::compute_function2(res, math::#type_vec4, _math::@max2_f(), x, y)
+EndMacro
+Macro Vec4_max_Scalar(res, x, scalar)
+  _math::compute_function2s(res, math::#type_vec4, _math::@max2_f(), x, scalar)
+EndMacro
+Macro Vec4_clamp(res, x, y, z)
+  _math::compute_function3(res, math::#type_vec4, math::@clamp_f(), x, y, z)
+EndMacro
+Macro Vec4_clamp_Scalar(res, x, min=0, max=1)
+  _math::compute_function3s(res, math::#type_vec4, math::@clamp_f(), x, min, max)
+EndMacro
+Macro Vec4_Repeat(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@repeat_f(), x)
+EndMacro
+Macro Vec4_mirrorClamp(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@repeat_f(), x)
+EndMacro
+Macro Vec4_mirrorRepeat(res, x)
+  _math::compute_function1(res, math::#type_vec4, math::@repeat_f(), x)
+EndMacro
+Macro Vec4_vec_Step(res, edge, x)
+  _math::vec_Step_Vector(res, math::#type_vec4, edge, x)
+EndMacro
+Macro Vec4_vec_Step_Scalar(res, edgeScalar, x)
+  _math::vec_Step_Vector_Scalar(res, math::#type_vec4, edgeScalar, x)
+EndMacro
+Macro Vec4_smoothstep(res, edge0, edge1, x)
+  _math::vec_smoothstep_vector(res, math::#type_vec4, edge0, edge1, x)
+EndMacro
+Macro Vec4_smoothstep_Scalar(res, edge0Scalar, edge1Scalar, x)
+  _math::vec_smoothstep_vector_Scalar(res, math::#type_vec4, edge0Scalar, edge1Scalar, x)
+EndMacro
+Macro Vec4_string(x,nbdecimals = 2)
+  _math::string(x, math::#type_vec4, nbdecimals)
+EndMacro
+Macro Vec4_stringBool(x)
+  _math::stringBool(x, math::#type_vec4)
+EndMacro
+Macro Vec4_IsNAN(resBool, x)
+  _math::is_Nan(resbool, math::#type_vec4, x)
+EndMacro
+Macro Vec4_isInf(resBool, x)
+  _math::is_Inf(resbool, math::#type_vec4, x)
+EndMacro
+Macro Vec4_any(bool)
+  _math::bool_any(bool,math::#type_vec4)
+EndMacro
+Macro Vec4_all(bool)
+  _math::bool_all(bool,math::#type_vec4)
+EndMacro
+Macro Vec4_Bool_not(resBool, Bool)
+  _math::Bool_not(resBool,math::#type_vec4,bool)
+EndMacro
+Macro Vec4_Bool_and(resBool, Bool)
+  _math::Bool_and(resBool,math::#type_vec4,bool)
+EndMacro
+Macro Vec4_Bool_or(resBool, Bool)
+  _math::Bool_or(resBool,math::#type_vec4,bool)
+EndMacro
+Macro Vec4_equal(resBool, x, y, epsilon = math::#epsilon)
+  _math::equal(resBool,math::#type_vec4,x,y,epsilon)
+EndMacro
+Macro Vec4_notEqual(resBool, x, y, epsilon = math::#epsilon)
+  _math::notEqual(resBool,math::#type_vec4,x,y,epsilon)
+EndMacro
+Macro Vec4_all_equal( x, y, epsilon = math::#epsilon)
+  _math::do_all(_math::@equal(),math::#type_vec4,x,y,epsilon)
+EndMacro
+Macro Vec4_any_notEqual( x, y, epsilon = math::#epsilon)
+  _math::do_any(_math::@notEqual(),math::#type_vec4,x,y,epsilon)
+EndMacro
+Macro Vec4_lessThan(resBool, x, y)
+  _math::lessThan(resBool,math::#type_vec4,x,y)
+EndMacro
+Macro Vec4_lessThanEqual(resBool, x, y)
+  _math::lessThanEqual(resBool,math::#type_vec4,x,y)
+EndMacro
+Macro Vec4_greaterThan(resBool, x, y)
+  _math::greaterThan(resBool,math::#type_vec4,x,y)
+EndMacro
+Macro Vec4_greaterThanEqual(resBool, x, y)
+  _math::greaterThanEqual(resBool,math::#type_vec4,x,y)
+EndMacro
+Macro Vec4_long_from_float(bool,matvec)
+  _math::long_from_float(bool,math::#type_vec4,matvec)
+EndMacro
+Macro Vec4_float_from_long(matvec, bool)
+  _math::float_from_long(matvec,math::#type_vec4, bool)
+EndMacro
+Macro Vec4_mix_Scalar(res, x, y, A)
+  _math::compute_mix_scalar(res, math::#type_vec4, x, y, a)
+EndMacro
+Macro Vec4_mix(res, x, y, A)
+  _math::compute_mix(res, math::#type_vec4, x, y, a)
 EndMacro
 ;}
 ;-----------------------
@@ -842,22 +1077,94 @@ Macro distance(a, b)
 Sqr(_math::compute_distance2(a,(((TypeOf(a\__type0__)&1)<<0) +((TypeOf(a\__type1__)&1)<<1) +((TypeOf(a\__type2__)&1)<<2) + ((TypeOf(a\__type3__)&1)<<3)), b))
 EndMacro
 Macro faceforward(res, n, i, nref)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(n\__type0__)&1)<<0) +((TypeOf(n\__type1__)&1)<<1) +((TypeOf(n\__type2__)&1)<<2) +((TypeOf(n\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(i\__type0__)&1)<<0) +((TypeOf(i\__type1__)&1)<<1) +((TypeOf(i\__type2__)&1)<<2) +((TypeOf(i\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(nref\__type0__)&1)<<0) +((TypeOf(nref\__type1__)&1)<<1) +((TypeOf(nref\__type2__)&1)<<2) + ((TypeOf(nref\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_faceforward(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), n, i, nref)
 EndMacro
 Macro reflect(res, i, n)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(i\__type0__)&1)<<0) +((TypeOf(i\__type1__)&1)<<1) +((TypeOf(i\__type2__)&1)<<2) +((TypeOf(i\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(n\__type0__)&1)<<0) +((TypeOf(n\__type1__)&1)<<1) +((TypeOf(n\__type2__)&1)<<2) + ((TypeOf(n\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_reflect(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), i, n)
 EndMacro
 Macro refract(res, I, N, eta)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(I\__type0__)&1)<<0) +((TypeOf(I\__type1__)&1)<<1) +((TypeOf(I\__type2__)&1)<<2) +((TypeOf(I\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(N\__type0__)&1)<<0) +((TypeOf(N\__type1__)&1)<<1) +((TypeOf(N\__type2__)&1)<<2) + ((TypeOf(N\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_refract(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), I, N, eta)
+EndMacro
+Macro vec2_dot(a, b)
+  (a\x * b\x + a\y * b\y) 
+EndMacro
+Macro vec3_dot(a, b)
+  (a\x * b\x + a\y * b\y + a\z * b\z) 
+EndMacro
+Macro vec4_dot(a, b)
+  (a\x * b\x + a\y * b\y + a\z * b\z + a\w * b\w) 
+EndMacro
+Macro vec2_length(a)
+Sqr((a\x * a\x + a\y * a\y))
+EndMacro
+Macro vec3_length(a)
+Sqr((a\x * a\x + a\y * a\y + a\z * a\z))
+EndMacro
+Macro vec4_length(a)
+Sqr((a\x * a\x + a\y * a\y + a\z * a\z + a\w * a\w))
+EndMacro
+Macro vec2_length2(a)
+((a\x * a\x + a\y * a\y))
+EndMacro
+Macro vec3_length2(a)
+((a\x * a\x + a\y * a\y + a\z * a\z))
+EndMacro
+Macro vec4_length2(a)
+((a\x * a\x + a\y * a\y + a\z * a\z + a\w * a\w))
+EndMacro
+Macro vec2_normalize(res,v)
+  _math::compute_normalize(res, math::#type_vec2, v)
+EndMacro
+Macro vec3_normalize(res,v)
+  _math::compute_normalize(res, math::#type_vec3, v)
+EndMacro
+Macro vec4_normalize(res,v)
+  _math::compute_normalize(res, math::#type_vec4, v)
+EndMacro
+Macro Vec2_distance2(a, b)
+  _math::compute_distance2(a, math::#type_vec2, b)
+EndMacro
+Macro Vec2_distance(a, b)
+  Sqr(_math::compute_distance2(a, math::#type_vec2, b))
+EndMacro
+Macro Vec2_faceforward(res, n, i, nref)
+  _math::compute_faceforward(res, math::#type_vec2, n, i, nref)
+EndMacro
+Macro Vec2_reflect(res, i, n)
+  _math::compute_reflect(res, math::#type_vec2, i, n)
+EndMacro
+Macro Vec2_refract(res, I, N, eta)
+  _math::compute_refract(res, math::#type_vec2, I, N, eta)
+EndMacro
+Macro Vec3_distance2(a, b)
+  _math::compute_distance2(a, math::#type_vec3, b)
+EndMacro
+Macro Vec3_distance(a, b)
+  Sqr(_math::compute_distance2(a, math::#type_vec3, b))
+EndMacro
+Macro Vec3_faceforward(res, n, i, nref)
+  _math::compute_faceforward(res, math::#type_vec3, n, i, nref)
+EndMacro
+Macro Vec3_reflect(res, i, n)
+  _math::compute_reflect(res, math::#type_vec3, i, n)
+EndMacro
+Macro Vec3_refract(res, I, N, eta)
+  _math::compute_refract(res, math::#type_vec3, I, N, eta)
+EndMacro
+Macro Vec4_distance2(a, b)
+  _math::compute_distance2(a, math::#type_vec4, b)
+EndMacro
+Macro Vec4_distance(a, b)
+  Sqr(_math::compute_distance2(a, math::#type_vec4, b))
+EndMacro
+Macro Vec4_faceforward(res, n, i, nref)
+  _math::compute_faceforward(res, math::#type_vec4, n, i, nref)
+EndMacro
+Macro Vec4_reflect(res, i, n)
+  _math::compute_reflect(res, math::#type_vec4, i, n)
+EndMacro
+Macro Vec4_refract(res, I, N, eta)
+  _math::compute_refract(res, math::#type_vec4, I, N, eta)
 EndMacro
 ;}
 ;-----------------------
@@ -1037,214 +1344,56 @@ EndStructure
 ;- type_matrix.pbi
 ;{
 
-;- Mat2x2
-Macro Mat2x2_set (res, x0 = 1, y0 = 0, x1 = 0, y1 = 1)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[1]\x = x1
-res\column[1]\y = y1
-EndMacro
-Macro Mat2x2_set_Vec(res, v0, v1)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-EndMacro
-Macro Mat2x2_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-EndMacro
-Macro Mat2x2_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-EndMacro
-Macro Mat2x2_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-EndMacro
-Macro Scalar_let_Mat2x2(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-EndMacro
+Declare Mat2x2_set_float(*res.Mat2x2, x0.f, y0.f, x1.f, y1.f)
+Declare Mat2x2_set_vec2(*res.Mat2x2, *v0.vec2, *v1.vec2)
+Declare Mat2x2_set(*res.Mat2x2, *m.Mat2x2)
+Declare Mat2x2_set_Mat2x3(*res.Mat2x2, *m.Mat2x3)
+Declare Mat2x2_set_Mat2x4(*res.Mat2x2, *m.Mat2x4)
+Declare Mat2x2_set_Mat3x2(*res.Mat2x2, *m.Mat3x2)
+Declare Mat2x2_set_Mat3x3(*res.Mat2x2, *m.Mat3x3)
+Declare Mat2x2_set_Mat3x4(*res.Mat2x2, *m.Mat3x4)
+Declare Mat2x2_set_Mat4x2(*res.Mat2x2, *m.Mat4x2)
+Declare Mat2x2_set_Mat4x3(*res.Mat2x2, *m.Mat4x3)
+Declare Mat2x2_set_Mat4x4(*res.Mat2x2, *m.Mat4x4)
+Declare Mat2x2_set_Scalar(*res.Mat2x2, s.f)
+Declare Mat2x2_add_Scalar(*res.Mat2x2, *m.Mat2x2, s.f)
+Declare Mat2x2_sub_Scalar(*res.Mat2x2, *m.Mat2x2, s.f)
+Declare Mat2x2_mul_Scalar(*res.Mat2x2, *m.Mat2x2, s.f)
+Declare Mat2x2_div_Scalar(*res.Mat2x2, *m.Mat2x2, s.f)
+Declare Scalar_add_Mat2x2(*res.Mat2x2, s.f, *m.Mat2x2)
+Declare Scalar_sub_Mat2x2(*res.Mat2x2, s.f, *m.Mat2x2)
+Declare Scalar_mul_Mat2x2(*res.Mat2x2, s.f, *m.Mat2x2)
+Declare Scalar_div_Mat2x2(*res.Mat2x2, s.f, *m.Mat2x2)
 Declare Mat2x2_add(*res.Mat2x2, *m1.Mat2x2, *m2.Mat2x2)
 Declare Mat2x2_sub(*res.Mat2x2, *m1.Mat2x2, *m2.Mat2x2)
-Declare Mat2x2_mul_Mat2x2(*res.Mat2x2, *m1.Mat2x2, *m2.Mat2x2)
+Declare Mat2x2_mul(*res.Mat2x2, *m1.Mat2x2, *m2.Mat2x2)
 Declare Mat2x2_mul_Mat3x2(*res.Mat3x2, *m1.Mat2x2, *m2.Mat3x2)
 Declare Mat2x2_mul_Mat4x2(*res.Mat4x2, *m1.Mat2x2, *m2.Mat4x2)
 Declare Mat2x2_div(*res.Mat2x2, *m1.Mat2x2, *m2.Mat2x2)
-Declare Mat2x2_div_Vec2(*res.vec2, *m.Mat2x2, *v.vec2)
-Declare Vec2_div_Mat2x2(*res.vec2, *v.vec2, *m.Mat2x2)
+Declare Mat2x2_div_vec2(*res.Mat2x2, *m.Mat2x2, *v.vec2)
+Declare vec2_div_Mat2x2(*res.Mat2x2, *v.vec2, *m.Mat2x2 )
 Declare Mat2x2_mul_Vec2(*vecres.Vec2, *m.Mat2x2, *v.Vec2)
 Declare Vec2_mul_Mat2x2(*vecres.Vec2, *v.Vec2, *m.Mat2x2)
-;- Mat2x3
-Macro Mat2x3_set (res, x0 = 1, y0 = 0, z0 = 0, x1 = 0, y1 = 1, z1 = 0)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[0]\z = z0
-res\column[1]\x = x1
-res\column[1]\y = y1
-res\column[1]\z = z1
-EndMacro
-Macro Mat2x3_set_Vec(res, v0, v1)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[0]\z = v0\z
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-res\column[1]\z = v1\z
-EndMacro
-Macro Mat2x3_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-EndMacro
-Macro Mat2x3_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-EndMacro
-Macro Mat2x3_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-EndMacro
-Macro Mat2x3_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-EndMacro
-Macro Mat2x3_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-EndMacro
-Macro Mat2x3_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-EndMacro
-Macro Mat2x3_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-EndMacro
-Macro Mat2x3_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-EndMacro
-Macro Mat2x3_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-EndMacro
-Macro Mat2x3_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-res\column[1]\z = 0.0
-EndMacro
-Macro Mat2x3_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-EndMacro
-Macro Scalar_let_Mat2x3(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-EndMacro
+Declare Mat2x3_set_float(*res.Mat2x3, x0.f, y0.f, z0.f, x1.f, y1.f, z1.f)
+Declare Mat2x3_set_vec3(*res.Mat2x3, *v0.vec3, *v1.vec3)
+Declare Mat2x3_set_Mat2x2(*res.Mat2x3, *m.Mat2x2)
+Declare Mat2x3_set(*res.Mat2x3, *m.Mat2x3)
+Declare Mat2x3_set_Mat2x4(*res.Mat2x3, *m.Mat2x4)
+Declare Mat2x3_set_Mat3x2(*res.Mat2x3, *m.Mat3x2)
+Declare Mat2x3_set_Mat3x3(*res.Mat2x3, *m.Mat3x3)
+Declare Mat2x3_set_Mat3x4(*res.Mat2x3, *m.Mat3x4)
+Declare Mat2x3_set_Mat4x2(*res.Mat2x3, *m.Mat4x2)
+Declare Mat2x3_set_Mat4x3(*res.Mat2x3, *m.Mat4x3)
+Declare Mat2x3_set_Mat4x4(*res.Mat2x3, *m.Mat4x4)
+Declare Mat2x3_set_Scalar(*res.Mat2x3, s.f)
+Declare Mat2x3_add_Scalar(*res.Mat2x3, *m.Mat2x3, s.f)
+Declare Mat2x3_sub_Scalar(*res.Mat2x3, *m.Mat2x3, s.f)
+Declare Mat2x3_mul_Scalar(*res.Mat2x3, *m.Mat2x3, s.f)
+Declare Mat2x3_div_Scalar(*res.Mat2x3, *m.Mat2x3, s.f)
+Declare Scalar_add_Mat2x3(*res.Mat2x3, s.f, *m.Mat2x3)
+Declare Scalar_sub_Mat2x3(*res.Mat2x3, s.f, *m.Mat2x3)
+Declare Scalar_mul_Mat2x3(*res.Mat2x3, s.f, *m.Mat2x3)
+Declare Scalar_div_Mat2x3(*res.Mat2x3, s.f, *m.Mat2x3)
 Declare Mat2x3_add(*res.Mat2x3, *m1.Mat2x3, *m2.Mat2x3)
 Declare Mat2x3_sub(*res.Mat2x3, *m1.Mat2x3, *m2.Mat2x3)
 Declare Mat2x3_mul_Mat2x2(*res.Mat2x3, *m1.Mat2x3, *m2.Mat2x2)
@@ -1252,147 +1401,26 @@ Declare Mat2x3_mul_Mat3x2(*res.Mat3x3, *m1.Mat2x3, *m2.Mat3x2)
 Declare Mat2x3_mul_Mat4x2(*res.Mat4x3, *m1.Mat2x3, *m2.Mat4x2)
 Declare Mat2x3_mul_Vec2(*vecres.Vec3, *m.Mat2x3, *v.Vec2)
 Declare Vec3_mul_Mat2x3(*vecres.Vec2, *v.Vec3, *m.Mat2x3)
-;- Mat2x4
-Macro Mat2x4_set (res, x0 = 1, y0 = 0, z0 = 0, w0 = 0, x1 = 0, y1 = 1, z1 = 0, w1 = 0)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[0]\z = z0
-res\column[0]\w = w0
-res\column[1]\x = x1
-res\column[1]\y = y1
-res\column[1]\z = z1
-res\column[1]\w = w1
-EndMacro
-Macro Mat2x4_set_Vec(res, v0, v1)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[0]\z = v0\z
-res\column[0]\w = v0\w
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-res\column[1]\z = v1\z
-res\column[1]\w = v1\w
-EndMacro
-Macro Mat2x4_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-EndMacro
-Macro Mat2x4_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-EndMacro
-Macro Mat2x4_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-EndMacro
-Macro Mat2x4_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-EndMacro
-Macro Mat2x4_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-EndMacro
-Macro Mat2x4_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-EndMacro
-Macro Mat2x4_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-EndMacro
-Macro Mat2x4_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-EndMacro
-Macro Mat2x4_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-EndMacro
-Macro Mat2x4_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-EndMacro
-Macro Mat2x4_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[0]\w = m\column[0]\w op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[1]\w = m\column[1]\w op(s)
-EndMacro
-Macro Scalar_let_Mat2x4(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[0]\w =(s) op m\column[0]\w
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[1]\w =(s) op m\column[1]\w
-EndMacro
+Declare Mat2x4_set_float(*res.Mat2x4, x0.f, y0.f, z0.f, w0.f, x1.f, y1.f, z1.f, w1.f)
+Declare Mat2x4_set_vec4(*res.Mat2x4, *v0.vec4, *v1.vec4)
+Declare Mat2x4_set_Mat2x2(*res.Mat2x4, *m.Mat2x2)
+Declare Mat2x4_set_Mat2x3(*res.Mat2x4, *m.Mat2x3)
+Declare Mat2x4_set(*res.Mat2x4, *m.Mat2x4)
+Declare Mat2x4_set_Mat3x2(*res.Mat2x4, *m.Mat3x2)
+Declare Mat2x4_set_Mat3x3(*res.Mat2x4, *m.Mat3x3)
+Declare Mat2x4_set_Mat3x4(*res.Mat2x4, *m.Mat3x4)
+Declare Mat2x4_set_Mat4x2(*res.Mat2x4, *m.Mat4x2)
+Declare Mat2x4_set_Mat4x3(*res.Mat2x4, *m.Mat4x3)
+Declare Mat2x4_set_Mat4x4(*res.Mat2x4, *m.Mat4x4)
+Declare Mat2x4_set_Scalar(*res.Mat2x4, s.f)
+Declare Mat2x4_add_Scalar(*res.Mat2x4, *m.Mat2x4, s.f)
+Declare Mat2x4_sub_Scalar(*res.Mat2x4, *m.Mat2x4, s.f)
+Declare Mat2x4_mul_Scalar(*res.Mat2x4, *m.Mat2x4, s.f)
+Declare Mat2x4_div_Scalar(*res.Mat2x4, *m.Mat2x4, s.f)
+Declare Scalar_add_Mat2x4(*res.Mat2x4, s.f, *m.Mat2x4)
+Declare Scalar_sub_Mat2x4(*res.Mat2x4, s.f, *m.Mat2x4)
+Declare Scalar_mul_Mat2x4(*res.Mat2x4, s.f, *m.Mat2x4)
+Declare Scalar_div_Mat2x4(*res.Mat2x4, s.f, *m.Mat2x4)
 Declare Mat2x4_add(*res.Mat2x4, *m1.Mat2x4, *m2.Mat2x4)
 Declare Mat2x4_sub(*res.Mat2x4, *m1.Mat2x4, *m2.Mat2x4)
 Declare Mat2x4_mul_Mat2x2(*res.Mat2x4, *m1.Mat2x4, *m2.Mat2x2)
@@ -1400,119 +1428,26 @@ Declare Mat2x4_mul_Mat3x2(*res.Mat3x4, *m1.Mat2x4, *m2.Mat3x2)
 Declare Mat2x4_mul_Mat4x2(*res.Mat4x4, *m1.Mat2x4, *m2.Mat4x2)
 Declare Mat2x4_mul_Vec2(*vecres.Vec4, *m.Mat2x4, *v.Vec2)
 Declare Vec4_mul_Mat2x4(*vecres.Vec2, *v.Vec4, *m.Mat2x4)
-;- Mat3x2
-Macro Mat3x2_set (res, x0 = 1, y0 = 0, x1 = 0, y1 = 1, x2 = 0, y2 = 0)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[1]\x = x1
-res\column[1]\y = y1
-res\column[2]\x = x2
-res\column[2]\y = y2
-EndMacro
-Macro Mat3x2_set_Vec(res, v0, v1, v2)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-res\column[2]\x = v2\x
-res\column[2]\y = v2\y
-EndMacro
-Macro Mat3x2_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-EndMacro
-Macro Mat3x2_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-EndMacro
-Macro Mat3x2_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-EndMacro
-Macro Mat3x2_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-EndMacro
-Macro Mat3x2_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-EndMacro
-Macro Mat3x2_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-EndMacro
-Macro Mat3x2_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-EndMacro
-Macro Mat3x2_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-EndMacro
-Macro Mat3x2_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-EndMacro
-Macro Mat3x2_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-EndMacro
-Macro Mat3x2_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-EndMacro
-Macro Scalar_let_Mat3x2(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-EndMacro
+Declare Mat3x2_set_float(*res.Mat3x2, x0.f, y0.f, x1.f, y1.f, x2.f, y2.f)
+Declare Mat3x2_set_vec2(*res.Mat3x2, *v0.vec2, *v1.vec2, *v2.vec2)
+Declare Mat3x2_set_Mat2x2(*res.Mat3x2, *m.Mat2x2)
+Declare Mat3x2_set_Mat2x3(*res.Mat3x2, *m.Mat2x3)
+Declare Mat3x2_set_Mat2x4(*res.Mat3x2, *m.Mat2x4)
+Declare Mat3x2_set(*res.Mat3x2, *m.Mat3x2)
+Declare Mat3x2_set_Mat3x3(*res.Mat3x2, *m.Mat3x3)
+Declare Mat3x2_set_Mat3x4(*res.Mat3x2, *m.Mat3x4)
+Declare Mat3x2_set_Mat4x2(*res.Mat3x2, *m.Mat4x2)
+Declare Mat3x2_set_Mat4x3(*res.Mat3x2, *m.Mat4x3)
+Declare Mat3x2_set_Mat4x4(*res.Mat3x2, *m.Mat4x4)
+Declare Mat3x2_set_Scalar(*res.Mat3x2, s.f)
+Declare Mat3x2_add_Scalar(*res.Mat3x2, *m.Mat3x2, s.f)
+Declare Mat3x2_sub_Scalar(*res.Mat3x2, *m.Mat3x2, s.f)
+Declare Mat3x2_mul_Scalar(*res.Mat3x2, *m.Mat3x2, s.f)
+Declare Mat3x2_div_Scalar(*res.Mat3x2, *m.Mat3x2, s.f)
+Declare Scalar_add_Mat3x2(*res.Mat3x2, s.f, *m.Mat3x2)
+Declare Scalar_sub_Mat3x2(*res.Mat3x2, s.f, *m.Mat3x2)
+Declare Scalar_mul_Mat3x2(*res.Mat3x2, s.f, *m.Mat3x2)
+Declare Scalar_div_Mat3x2(*res.Mat3x2, s.f, *m.Mat3x2)
 Declare Mat3x2_add(*res.Mat3x2, *m1.Mat3x2, *m2.Mat3x2)
 Declare Mat3x2_sub(*res.Mat3x2, *m1.Mat3x2, *m2.Mat3x2)
 Declare Mat3x2_mul_Mat2x3(*res.Mat2x2, *m1.Mat3x2, *m2.Mat2x3)
@@ -1520,368 +1455,56 @@ Declare Mat3x2_mul_Mat3x3(*res.Mat3x2, *m1.Mat3x2, *m2.Mat3x3)
 Declare Mat3x2_mul_Mat4x3(*res.Mat4x2, *m1.Mat3x2, *m2.Mat4x3)
 Declare Mat3x2_mul_Vec3(*vecres.Vec2, *m.Mat3x2, *v.Vec3)
 Declare Vec2_mul_Mat3x2(*vecres.Vec3, *v.Vec2, *m.Mat3x2)
-;- Mat3x3
-Macro Mat3x3_set (res, x0 = 1, y0 = 0, z0 = 0, x1 = 0, y1 = 1, z1 = 0, x2 = 0, y2 = 0, z2 = 1)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[0]\z = z0
-res\column[1]\x = x1
-res\column[1]\y = y1
-res\column[1]\z = z1
-res\column[2]\x = x2
-res\column[2]\y = y2
-res\column[2]\z = z2
-EndMacro
-Macro Mat3x3_set_Vec(res, v0, v1, v2)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[0]\z = v0\z
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-res\column[1]\z = v1\z
-res\column[2]\x = v2\x
-res\column[2]\y = v2\y
-res\column[2]\z = v2\z
-EndMacro
-Macro Mat3x3_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-EndMacro
-Macro Mat3x3_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-EndMacro
-Macro Mat3x3_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-EndMacro
-Macro Mat3x3_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-EndMacro
-Macro Mat3x3_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-EndMacro
-Macro Mat3x3_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-EndMacro
-Macro Mat3x3_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-EndMacro
-Macro Mat3x3_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-EndMacro
-Macro Mat3x3_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-EndMacro
-Macro Mat3x3_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-res\column[1]\z = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = s
-EndMacro
-Macro Mat3x3_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[2]\z = m\column[2]\z op(s)
-EndMacro
-Macro Scalar_let_Mat3x3(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[2]\z =(s) op m\column[2]\z
-EndMacro
+Declare Mat3x3_set_float(*res.Mat3x3, x0.f, y0.f, z0.f, x1.f, y1.f, z1.f, x2.f, y2.f, z2.f)
+Declare Mat3x3_set_vec3(*res.Mat3x3, *v0.vec3, *v1.vec3, *v2.vec3)
+Declare Mat3x3_set_Mat2x2(*res.Mat3x3, *m.Mat2x2)
+Declare Mat3x3_set_Mat2x3(*res.Mat3x3, *m.Mat2x3)
+Declare Mat3x3_set_Mat2x4(*res.Mat3x3, *m.Mat2x4)
+Declare Mat3x3_set_Mat3x2(*res.Mat3x3, *m.Mat3x2)
+Declare Mat3x3_set(*res.Mat3x3, *m.Mat3x3)
+Declare Mat3x3_set_Mat3x4(*res.Mat3x3, *m.Mat3x4)
+Declare Mat3x3_set_Mat4x2(*res.Mat3x3, *m.Mat4x2)
+Declare Mat3x3_set_Mat4x3(*res.Mat3x3, *m.Mat4x3)
+Declare Mat3x3_set_Mat4x4(*res.Mat3x3, *m.Mat4x4)
+Declare Mat3x3_set_Scalar(*res.Mat3x3, s.f)
+Declare Mat3x3_add_Scalar(*res.Mat3x3, *m.Mat3x3, s.f)
+Declare Mat3x3_sub_Scalar(*res.Mat3x3, *m.Mat3x3, s.f)
+Declare Mat3x3_mul_Scalar(*res.Mat3x3, *m.Mat3x3, s.f)
+Declare Mat3x3_div_Scalar(*res.Mat3x3, *m.Mat3x3, s.f)
+Declare Scalar_add_Mat3x3(*res.Mat3x3, s.f, *m.Mat3x3)
+Declare Scalar_sub_Mat3x3(*res.Mat3x3, s.f, *m.Mat3x3)
+Declare Scalar_mul_Mat3x3(*res.Mat3x3, s.f, *m.Mat3x3)
+Declare Scalar_div_Mat3x3(*res.Mat3x3, s.f, *m.Mat3x3)
 Declare Mat3x3_add(*res.Mat3x3, *m1.Mat3x3, *m2.Mat3x3)
 Declare Mat3x3_sub(*res.Mat3x3, *m1.Mat3x3, *m2.Mat3x3)
 Declare Mat3x3_mul_Mat2x3(*res.Mat2x3, *m1.Mat3x3, *m2.Mat2x3)
-Declare Mat3x3_mul_Mat3x3(*res.Mat3x3, *m1.Mat3x3, *m2.Mat3x3)
+Declare Mat3x3_mul(*res.Mat3x3, *m1.Mat3x3, *m2.Mat3x3)
 Declare Mat3x3_mul_Mat4x3(*res.Mat4x3, *m1.Mat3x3, *m2.Mat4x3)
 Declare Mat3x3_div(*res.Mat3x3, *m1.Mat3x3, *m2.Mat3x3)
-Declare Mat3x3_div_Vec3(*res.vec3, *m.Mat3x3, *v.vec3)
-Declare Vec3_div_Mat3x3(*res.vec3, *v.vec3, *m.Mat3x3)
+Declare Mat3x3_div_vec3(*res.Mat3x3, *m.Mat3x3, *v.vec3)
+Declare vec3_div_Mat3x3(*res.Mat3x3, *v.vec3, *m.Mat3x3 )
 Declare Mat3x3_mul_Vec3(*vecres.Vec3, *m.Mat3x3, *v.Vec3)
 Declare Vec3_mul_Mat3x3(*vecres.Vec3, *v.Vec3, *m.Mat3x3)
-;- Mat3x4
-Macro Mat3x4_set (res, x0 = 1, y0 = 0, z0 = 0, w0 = 0, x1 = 0, y1 = 1, z1 = 0, w1 = 0, x2 = 0, y2 = 0, z2 = 1, w2 = 0)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[0]\z = z0
-res\column[0]\w = w0
-res\column[1]\x = x1
-res\column[1]\y = y1
-res\column[1]\z = z1
-res\column[1]\w = w1
-res\column[2]\x = x2
-res\column[2]\y = y2
-res\column[2]\z = z2
-res\column[2]\w = w2
-EndMacro
-Macro Mat3x4_set_Vec(res, v0, v1, v2)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[0]\z = v0\z
-res\column[0]\w = v0\w
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-res\column[1]\z = v1\z
-res\column[1]\w = v1\w
-res\column[2]\x = v2\x
-res\column[2]\y = v2\y
-res\column[2]\z = v2\z
-res\column[2]\w = v2\w
-EndMacro
-Macro Mat3x4_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-EndMacro
-Macro Mat3x4_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-EndMacro
-Macro Mat3x4_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-EndMacro
-Macro Mat3x4_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-EndMacro
-Macro Mat3x4_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = 0.0
-EndMacro
-Macro Mat3x4_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = m\v[2]\w
-EndMacro
-Macro Mat3x4_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-EndMacro
-Macro Mat3x4_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = 0.0
-EndMacro
-Macro Mat3x4_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = m\v[2]\w
-EndMacro
-Macro Mat3x4_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = s
-res\column[2]\w = 0.0
-EndMacro
-Macro Mat3x4_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[0]\w = m\column[0]\w op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[1]\w = m\column[1]\w op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[2]\z = m\column[2]\z op(s)
-res\column[2]\w = m\column[2]\w op(s)
-EndMacro
-Macro Scalar_let_Mat3x4(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[0]\w =(s) op m\column[0]\w
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[1]\w =(s) op m\column[1]\w
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[2]\z =(s) op m\column[2]\z
-res\column[2]\w =(s) op m\column[2]\w
-EndMacro
+Declare Mat3x4_set_float(*res.Mat3x4, x0.f, y0.f, z0.f, w0.f, x1.f, y1.f, z1.f, w1.f, x2.f, y2.f, z2.f, w2.f)
+Declare Mat3x4_set_vec4(*res.Mat3x4, *v0.vec4, *v1.vec4, *v2.vec4)
+Declare Mat3x4_set_Mat2x2(*res.Mat3x4, *m.Mat2x2)
+Declare Mat3x4_set_Mat2x3(*res.Mat3x4, *m.Mat2x3)
+Declare Mat3x4_set_Mat2x4(*res.Mat3x4, *m.Mat2x4)
+Declare Mat3x4_set_Mat3x2(*res.Mat3x4, *m.Mat3x2)
+Declare Mat3x4_set_Mat3x3(*res.Mat3x4, *m.Mat3x3)
+Declare Mat3x4_set(*res.Mat3x4, *m.Mat3x4)
+Declare Mat3x4_set_Mat4x2(*res.Mat3x4, *m.Mat4x2)
+Declare Mat3x4_set_Mat4x3(*res.Mat3x4, *m.Mat4x3)
+Declare Mat3x4_set_Mat4x4(*res.Mat3x4, *m.Mat4x4)
+Declare Mat3x4_set_Scalar(*res.Mat3x4, s.f)
+Declare Mat3x4_add_Scalar(*res.Mat3x4, *m.Mat3x4, s.f)
+Declare Mat3x4_sub_Scalar(*res.Mat3x4, *m.Mat3x4, s.f)
+Declare Mat3x4_mul_Scalar(*res.Mat3x4, *m.Mat3x4, s.f)
+Declare Mat3x4_div_Scalar(*res.Mat3x4, *m.Mat3x4, s.f)
+Declare Scalar_add_Mat3x4(*res.Mat3x4, s.f, *m.Mat3x4)
+Declare Scalar_sub_Mat3x4(*res.Mat3x4, s.f, *m.Mat3x4)
+Declare Scalar_mul_Mat3x4(*res.Mat3x4, s.f, *m.Mat3x4)
+Declare Scalar_div_Mat3x4(*res.Mat3x4, s.f, *m.Mat3x4)
 Declare Mat3x4_add(*res.Mat3x4, *m1.Mat3x4, *m2.Mat3x4)
 Declare Mat3x4_sub(*res.Mat3x4, *m1.Mat3x4, *m2.Mat3x4)
 Declare Mat3x4_mul_Mat2x3(*res.Mat2x4, *m1.Mat3x4, *m2.Mat2x3)
@@ -1889,147 +1512,26 @@ Declare Mat3x4_mul_Mat3x3(*res.Mat3x4, *m1.Mat3x4, *m2.Mat3x3)
 Declare Mat3x4_mul_Mat4x3(*res.Mat4x4, *m1.Mat3x4, *m2.Mat4x3)
 Declare Mat3x4_mul_Vec3(*vecres.Vec4, *m.Mat3x4, *v.Vec3)
 Declare Vec4_mul_Mat3x4(*vecres.Vec3, *v.Vec4, *m.Mat3x4)
-;- Mat4x2
-Macro Mat4x2_set (res, x0 = 1, y0 = 0, x1 = 0, y1 = 1, x2 = 0, y2 = 0, x3 = 0, y3 = 0)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[1]\x = x1
-res\column[1]\y = y1
-res\column[2]\x = x2
-res\column[2]\y = y2
-res\column[3]\x = x3
-res\column[3]\y = y3
-EndMacro
-Macro Mat4x2_set_Vec(res, v0, v1, v2, v3)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-res\column[2]\x = v2\x
-res\column[2]\y = v2\y
-res\column[3]\x = v3\x
-res\column[3]\y = v3\y
-EndMacro
-Macro Mat4x2_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-EndMacro
-Macro Mat4x2_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-EndMacro
-Macro Mat4x2_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-EndMacro
-Macro Mat4x2_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-EndMacro
-Macro Mat4x2_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-EndMacro
-Macro Mat4x2_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-EndMacro
-Macro Mat4x2_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-EndMacro
-Macro Mat4x2_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-EndMacro
-Macro Mat4x2_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-EndMacro
-Macro Mat4x2_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-EndMacro
-Macro Mat4x2_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[3]\x = m\column[3]\x op(s)
-res\column[3]\y = m\column[3]\y op(s)
-EndMacro
-Macro Scalar_let_Mat4x2(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[3]\x =(s) op m\column[3]\x
-res\column[3]\y =(s) op m\column[3]\y
-EndMacro
+Declare Mat4x2_set_float(*res.Mat4x2, x0.f, y0.f, x1.f, y1.f, x2.f, y2.f, x3.f, y3.f)
+Declare Mat4x2_set_vec2(*res.Mat4x2, *v0.vec2, *v1.vec2, *v2.vec2, *v3.vec2)
+Declare Mat4x2_set_Mat2x2(*res.Mat4x2, *m.Mat2x2)
+Declare Mat4x2_set_Mat2x3(*res.Mat4x2, *m.Mat2x3)
+Declare Mat4x2_set_Mat2x4(*res.Mat4x2, *m.Mat2x4)
+Declare Mat4x2_set_Mat3x2(*res.Mat4x2, *m.Mat3x2)
+Declare Mat4x2_set_Mat3x3(*res.Mat4x2, *m.Mat3x3)
+Declare Mat4x2_set_Mat3x4(*res.Mat4x2, *m.Mat3x4)
+Declare Mat4x2_set(*res.Mat4x2, *m.Mat4x2)
+Declare Mat4x2_set_Mat4x3(*res.Mat4x2, *m.Mat4x3)
+Declare Mat4x2_set_Mat4x4(*res.Mat4x2, *m.Mat4x4)
+Declare Mat4x2_set_Scalar(*res.Mat4x2, s.f)
+Declare Mat4x2_add_Scalar(*res.Mat4x2, *m.Mat4x2, s.f)
+Declare Mat4x2_sub_Scalar(*res.Mat4x2, *m.Mat4x2, s.f)
+Declare Mat4x2_mul_Scalar(*res.Mat4x2, *m.Mat4x2, s.f)
+Declare Mat4x2_div_Scalar(*res.Mat4x2, *m.Mat4x2, s.f)
+Declare Scalar_add_Mat4x2(*res.Mat4x2, s.f, *m.Mat4x2)
+Declare Scalar_sub_Mat4x2(*res.Mat4x2, s.f, *m.Mat4x2)
+Declare Scalar_mul_Mat4x2(*res.Mat4x2, s.f, *m.Mat4x2)
+Declare Scalar_div_Mat4x2(*res.Mat4x2, s.f, *m.Mat4x2)
 Declare Mat4x2_add(*res.Mat4x2, *m1.Mat4x2, *m2.Mat4x2)
 Declare Mat4x2_sub(*res.Mat4x2, *m1.Mat4x2, *m2.Mat4x2)
 Declare Mat4x2_mul_Mat2x4(*res.Mat2x2, *m1.Mat4x2, *m2.Mat2x4)
@@ -2037,203 +1539,26 @@ Declare Mat4x2_mul_Mat3x4(*res.Mat3x2, *m1.Mat4x2, *m2.Mat3x4)
 Declare Mat4x2_mul_Mat4x4(*res.Mat4x2, *m1.Mat4x2, *m2.Mat4x4)
 Declare Mat4x2_mul_Vec4(*vecres.Vec2, *m.Mat4x2, *v.Vec4)
 Declare Vec2_mul_Mat4x2(*vecres.Vec4, *v.Vec2, *m.Mat4x2)
-;- Mat4x3
-Macro Mat4x3_set (res, x0 = 1, y0 = 0, z0 = 0, x1 = 0, y1 = 1, z1 = 0, x2 = 0, y2 = 0, z2 = 1, x3 = 0, y3 = 0, z3 = 0)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[0]\z = z0
-res\column[1]\x = x1
-res\column[1]\y = y1
-res\column[1]\z = z1
-res\column[2]\x = x2
-res\column[2]\y = y2
-res\column[2]\z = z2
-res\column[3]\x = x3
-res\column[3]\y = y3
-res\column[3]\z = z3
-EndMacro
-Macro Mat4x3_set_Vec(res, v0, v1, v2, v3)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[0]\z = v0\z
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-res\column[1]\z = v1\z
-res\column[2]\x = v2\x
-res\column[2]\y = v2\y
-res\column[2]\z = v2\z
-res\column[3]\x = v3\x
-res\column[3]\y = v3\y
-res\column[3]\z = v3\z
-EndMacro
-Macro Mat4x3_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-EndMacro
-Macro Mat4x3_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-EndMacro
-Macro Mat4x3_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-EndMacro
-Macro Mat4x3_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-EndMacro
-Macro Mat4x3_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-EndMacro
-Macro Mat4x3_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-EndMacro
-Macro Mat4x3_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = 0.0
-EndMacro
-Macro Mat4x3_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = m\v[3]\z
-EndMacro
-Macro Mat4x3_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = m\v[3]\z
-EndMacro
-Macro Mat4x3_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-res\column[1]\z = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = s
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-EndMacro
-Macro Mat4x3_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[2]\z = m\column[2]\z op(s)
-res\column[3]\x = m\column[3]\x op(s)
-res\column[3]\y = m\column[3]\y op(s)
-res\column[3]\z = m\column[3]\z op(s)
-EndMacro
-Macro Scalar_let_Mat4x3(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[2]\z =(s) op m\column[2]\z
-res\column[3]\x =(s) op m\column[3]\x
-res\column[3]\y =(s) op m\column[3]\y
-res\column[3]\z =(s) op m\column[3]\z
-EndMacro
+Declare Mat4x3_set_float(*res.Mat4x3, x0.f, y0.f, z0.f, x1.f, y1.f, z1.f, x2.f, y2.f, z2.f, x3.f, y3.f, z3.f)
+Declare Mat4x3_set_vec3(*res.Mat4x3, *v0.vec3, *v1.vec3, *v2.vec3, *v3.vec3)
+Declare Mat4x3_set_Mat2x2(*res.Mat4x3, *m.Mat2x2)
+Declare Mat4x3_set_Mat2x3(*res.Mat4x3, *m.Mat2x3)
+Declare Mat4x3_set_Mat2x4(*res.Mat4x3, *m.Mat2x4)
+Declare Mat4x3_set_Mat3x2(*res.Mat4x3, *m.Mat3x2)
+Declare Mat4x3_set_Mat3x3(*res.Mat4x3, *m.Mat3x3)
+Declare Mat4x3_set_Mat3x4(*res.Mat4x3, *m.Mat3x4)
+Declare Mat4x3_set_Mat4x2(*res.Mat4x3, *m.Mat4x2)
+Declare Mat4x3_set(*res.Mat4x3, *m.Mat4x3)
+Declare Mat4x3_set_Mat4x4(*res.Mat4x3, *m.Mat4x4)
+Declare Mat4x3_set_Scalar(*res.Mat4x3, s.f)
+Declare Mat4x3_add_Scalar(*res.Mat4x3, *m.Mat4x3, s.f)
+Declare Mat4x3_sub_Scalar(*res.Mat4x3, *m.Mat4x3, s.f)
+Declare Mat4x3_mul_Scalar(*res.Mat4x3, *m.Mat4x3, s.f)
+Declare Mat4x3_div_Scalar(*res.Mat4x3, *m.Mat4x3, s.f)
+Declare Scalar_add_Mat4x3(*res.Mat4x3, s.f, *m.Mat4x3)
+Declare Scalar_sub_Mat4x3(*res.Mat4x3, s.f, *m.Mat4x3)
+Declare Scalar_mul_Mat4x3(*res.Mat4x3, s.f, *m.Mat4x3)
+Declare Scalar_div_Mat4x3(*res.Mat4x3, s.f, *m.Mat4x3)
 Declare Mat4x3_add(*res.Mat4x3, *m1.Mat4x3, *m2.Mat4x3)
 Declare Mat4x3_sub(*res.Mat4x3, *m1.Mat4x3, *m2.Mat4x3)
 Declare Mat4x3_mul_Mat2x4(*res.Mat2x3, *m1.Mat4x3, *m2.Mat2x4)
@@ -2241,267 +1566,34 @@ Declare Mat4x3_mul_Mat3x4(*res.Mat3x3, *m1.Mat4x3, *m2.Mat3x4)
 Declare Mat4x3_mul_Mat4x4(*res.Mat4x3, *m1.Mat4x3, *m2.Mat4x4)
 Declare Mat4x3_mul_Vec4(*vecres.Vec3, *m.Mat4x3, *v.Vec4)
 Declare Vec3_mul_Mat4x3(*vecres.Vec4, *v.Vec3, *m.Mat4x3)
-;- Mat4x4
-Macro Mat4x4_set (res, x0 = 1, y0 = 0, z0 = 0, w0 = 0, x1 = 0, y1 = 1, z1 = 0, w1 = 0, x2 = 0, y2 = 0, z2 = 1, w2 = 0, x3 = 0, y3 = 0, z3 = 0, w3 = 1)
-res\column[0]\x = x0
-res\column[0]\y = y0
-res\column[0]\z = z0
-res\column[0]\w = w0
-res\column[1]\x = x1
-res\column[1]\y = y1
-res\column[1]\z = z1
-res\column[1]\w = w1
-res\column[2]\x = x2
-res\column[2]\y = y2
-res\column[2]\z = z2
-res\column[2]\w = w2
-res\column[3]\x = x3
-res\column[3]\y = y3
-res\column[3]\z = z3
-res\column[3]\w = w3
-EndMacro
-Macro Mat4x4_set_Vec(res, v0, v1, v2, v3)
-res\column[0]\x = v0\x
-res\column[0]\y = v0\y
-res\column[0]\z = v0\z
-res\column[0]\w = v0\w
-res\column[1]\x = v1\x
-res\column[1]\y = v1\y
-res\column[1]\z = v1\z
-res\column[1]\w = v1\w
-res\column[2]\x = v2\x
-res\column[2]\y = v2\y
-res\column[2]\z = v2\z
-res\column[2]\w = v2\w
-res\column[3]\x = v3\x
-res\column[3]\y = v3\y
-res\column[3]\z = v3\z
-res\column[3]\w = v3\w
-EndMacro
-Macro Mat4x4_set_Mat2x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-EndMacro
-Macro Mat4x4_set_Mat2x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-EndMacro
-Macro Mat4x4_set_Mat2x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-EndMacro
-Macro Mat4x4_set_Mat3x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-EndMacro
-Macro Mat4x4_set_Mat3x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-EndMacro
-Macro Mat4x4_set_Mat3x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = m\v[2]\w
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-EndMacro
-Macro Mat4x4_set_Mat4x2(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-EndMacro
-Macro Mat4x4_set_Mat4x3(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = 0.0
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = m\v[3]\z
-res\column[3]\w = 1.0
-EndMacro
-Macro Mat4x4_set_Mat4x4(res, m)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = m\v[2]\w
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = m\v[3]\z
-res\column[3]\w = m\v[3]\w
-EndMacro
-Macro Mat4x4_set_Scalar(res, s)
-res\column[0]\x = s
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = s
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = s
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = s
-EndMacro
-Macro Mat4x4_let_Scalar(res, m, op, s)
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[0]\w = m\column[0]\w op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[1]\w = m\column[1]\w op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[2]\z = m\column[2]\z op(s)
-res\column[2]\w = m\column[2]\w op(s)
-res\column[3]\x = m\column[3]\x op(s)
-res\column[3]\y = m\column[3]\y op(s)
-res\column[3]\z = m\column[3]\z op(s)
-res\column[3]\w = m\column[3]\w op(s)
-EndMacro
-Macro Scalar_let_Mat4x4(res, s, op, m)
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[0]\w =(s) op m\column[0]\w
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[1]\w =(s) op m\column[1]\w
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[2]\z =(s) op m\column[2]\z
-res\column[2]\w =(s) op m\column[2]\w
-res\column[3]\x =(s) op m\column[3]\x
-res\column[3]\y =(s) op m\column[3]\y
-res\column[3]\z =(s) op m\column[3]\z
-res\column[3]\w =(s) op m\column[3]\w
-EndMacro
+Declare Mat4x4_set_float(*res.Mat4x4, x0.f, y0.f, z0.f, w0.f, x1.f, y1.f, z1.f, w1.f, x2.f, y2.f, z2.f, w2.f, x3.f, y3.f, z3.f, w3.f)
+Declare Mat4x4_set_vec4(*res.Mat4x4, *v0.vec4, *v1.vec4, *v2.vec4, *v3.vec4)
+Declare Mat4x4_set_Mat2x2(*res.Mat4x4, *m.Mat2x2)
+Declare Mat4x4_set_Mat2x3(*res.Mat4x4, *m.Mat2x3)
+Declare Mat4x4_set_Mat2x4(*res.Mat4x4, *m.Mat2x4)
+Declare Mat4x4_set_Mat3x2(*res.Mat4x4, *m.Mat3x2)
+Declare Mat4x4_set_Mat3x3(*res.Mat4x4, *m.Mat3x3)
+Declare Mat4x4_set_Mat3x4(*res.Mat4x4, *m.Mat3x4)
+Declare Mat4x4_set_Mat4x2(*res.Mat4x4, *m.Mat4x2)
+Declare Mat4x4_set_Mat4x3(*res.Mat4x4, *m.Mat4x3)
+Declare Mat4x4_set(*res.Mat4x4, *m.Mat4x4)
+Declare Mat4x4_set_Scalar(*res.Mat4x4, s.f)
+Declare Mat4x4_add_Scalar(*res.Mat4x4, *m.Mat4x4, s.f)
+Declare Mat4x4_sub_Scalar(*res.Mat4x4, *m.Mat4x4, s.f)
+Declare Mat4x4_mul_Scalar(*res.Mat4x4, *m.Mat4x4, s.f)
+Declare Mat4x4_div_Scalar(*res.Mat4x4, *m.Mat4x4, s.f)
+Declare Scalar_add_Mat4x4(*res.Mat4x4, s.f, *m.Mat4x4)
+Declare Scalar_sub_Mat4x4(*res.Mat4x4, s.f, *m.Mat4x4)
+Declare Scalar_mul_Mat4x4(*res.Mat4x4, s.f, *m.Mat4x4)
+Declare Scalar_div_Mat4x4(*res.Mat4x4, s.f, *m.Mat4x4)
 Declare Mat4x4_add(*res.Mat4x4, *m1.Mat4x4, *m2.Mat4x4)
 Declare Mat4x4_sub(*res.Mat4x4, *m1.Mat4x4, *m2.Mat4x4)
 Declare Mat4x4_mul_Mat2x4(*res.Mat2x4, *m1.Mat4x4, *m2.Mat2x4)
 Declare Mat4x4_mul_Mat3x4(*res.Mat3x4, *m1.Mat4x4, *m2.Mat3x4)
-Declare Mat4x4_mul_Mat4x4(*res.Mat4x4, *m1.Mat4x4, *m2.Mat4x4)
+Declare Mat4x4_mul(*res.Mat4x4, *m1.Mat4x4, *m2.Mat4x4)
 Declare Mat4x4_div(*res.Mat4x4, *m1.Mat4x4, *m2.Mat4x4)
-Declare Mat4x4_div_Vec4(*res.vec4, *m.Mat4x4, *v.vec4)
-Declare Vec4_div_Mat4x4(*res.vec4, *v.vec4, *m.Mat4x4)
+Declare Mat4x4_div_vec4(*res.Mat4x4, *m.Mat4x4, *v.vec4)
+Declare vec4_div_Mat4x4(*res.Mat4x4, *v.vec4, *m.Mat4x4 )
 Declare Mat4x4_mul_Vec4(*vecres.Vec4, *m.Mat4x4, *v.Vec4)
 Declare Vec4_mul_Mat4x4(*vecres.Vec4, *v.Vec4, *m.Mat4x4)
 ;}
@@ -2525,1710 +1617,10 @@ Declare.f mat2x2_determinant(*m.mat2x2)
 Declare.f mat3x3_determinant(*m.mat3x3)
 Declare.f mat4x4_determinant(*m.mat4x4)
 Macro matrixCompMult(res, x,y)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_matrixCompMult(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), x,y)
 EndMacro
 Macro outerProduct(res, v1, v2)
 _math::compute_outerProduct(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), v1, v2)
-EndMacro
-;}
-;-----------------------
-;- dispatcher.pbi
-;{
-
-Macro add(res, m1, m2)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m1\__type0__)&1)<<0) +((TypeOf(m1\__type1__)&1)<<1) +((TypeOf(m1\__type2__)&1)<<2) +((TypeOf(m1\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m2\__type0__)&1)<<0) +((TypeOf(m2\__type1__)&1)<<1) +((TypeOf(m2\__type2__)&1)<<2) + ((TypeOf(m2\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-res\w = m1\w + m2\w
-res\x = m1\x + m2\x
-res\y = m1\y + m2\y
-res\z = m1\z + m2\z
-    CompilerCase math::#type_vec2
-res\x = m1\x + m2\x
-res\y = m1\y + m2\y
-    CompilerCase math::#type_vec3
-res\x = m1\x + m2\x
-res\y = m1\y + m2\y
-res\z = m1\z + m2\z
-    CompilerCase math::#type_vec4
-res\x = m1\x + m2\x
-res\y = m1\y + m2\y
-res\z = m1\z + m2\z
-res\w = m1\w + m2\w
-    CompilerCase math::#type_Mat2x2
-      math::Mat2x2_add(res, m1, m2)
-    CompilerCase math::#type_Mat2x3
-      math::Mat2x3_add(res, m1, m2)
-    CompilerCase math::#type_Mat2x4
-      math::Mat2x4_add(res, m1, m2)
-    CompilerCase math::#type_Mat3x2
-      math::Mat3x2_add(res, m1, m2)
-    CompilerCase math::#type_Mat3x3
-      math::Mat3x3_add(res, m1, m2)
-    CompilerCase math::#type_Mat3x4
-      math::Mat3x4_add(res, m1, m2)
-    CompilerCase math::#type_Mat4x2
-      math::Mat4x2_add(res, m1, m2)
-    CompilerCase math::#type_Mat4x3
-      math::Mat4x3_add(res, m1, m2)
-    CompilerCase math::#type_Mat4x4
-      math::Mat4x4_add(res, m1, m2)
-    CompilerDefault
-      CompilerError "[add] unsupported type"
-  CompilerEndSelect
-EndMacro
-Macro mul(res, m1, m2)
-CompilerSelect(((((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3))) +((((TypeOf(m1\__type0__)&1)<<0) +((TypeOf(m1\__type1__)&1)<<1) +((TypeOf(m1\__type2__)&1)<<2) +((TypeOf(m1\__type3__)&1)<<3))) <<8 +((((TypeOf(m2\__type0__)&1)<<0) +((TypeOf(m2\__type1__)&1)<<1) +((TypeOf(m2\__type2__)&1)<<2) + ((TypeOf(m2\__type3__)&1)<<3)))<<16)
-CompilerCase ((math::#type_quat) +(math::#type_quat) <<8 +(math::#type_quat) <<16);quat
-      math::quat_mul(res, m1, m2)
-CompilerCase ((math::#type_vec3) +(math::#type_quat) <<8 +(math::#type_vec3) <<16)
-      math::quat_mul_vec3(res, m1, m2)
-CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8 +(math::#type_quat) <<16)
-      math::vec3_mul_quat(res, m1, m2)
-CompilerCase ((math::#type_vec4) +(math::#type_quat) <<8 +(math::#type_vec3) <<16)
-      math::quat_mul_vec4(res, m1, m2)
-CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8 +(math::#type_quat) <<16)
-      math::vec4_mul_quat(res, m1, m2)
-CompilerCase ((math::#type_vec2) +(math::#type_vec2) <<8 +(math::#type_vec2) <<16); vec vec
-res\x = m1\x * m2\x
-res\y = m1\y * m2\y
-CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8 +(math::#type_vec3) <<16)
-res\x = m1\x * m2\x
-res\y = m1\y * m2\y
-res\z = m1\z * m2\z
-CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8 +(math::#type_vec4) <<16)
-res\x = m1\x * m2\x
-res\y = m1\y * m2\y
-res\z = m1\z * m2\z
-res\w = m1\w * m2\w
-CompilerCase ((math::#type_Vec2) +(math::#type_Mat2x2) <<8 +(math::#type_Vec2) <<16); mat vec
-      math::Mat2x2_mul_Vec2(res, m1, m2)
-CompilerCase ((math::#type_Vec3) +(math::#type_Mat2x3) <<8 +(math::#type_Vec2) <<16)
-      math::Mat2x3_mul_Vec2(res, m1, m2)
-CompilerCase ((math::#type_Vec4) +(math::#type_Mat2x4) <<8 +(math::#type_Vec2) <<16)
-      math::Mat2x4_mul_Vec2(res, m1, m2)
-CompilerCase ((math::#type_Vec2) +(math::#type_Mat3x2) <<8 +(math::#type_Vec3) <<16)
-      math::Mat3x2_mul_Vec3(res, m1, m2)
-CompilerCase ((math::#type_Vec3) +(math::#type_Mat3x3) <<8 +(math::#type_Vec3) <<16)
-      math::Mat3x3_mul_Vec3(res, m1, m2)
-CompilerCase ((math::#type_Vec4) +(math::#type_Mat3x4) <<8 +(math::#type_Vec3) <<16)
-      math::Mat3x4_mul_Vec3(res, m1, m2)
-CompilerCase ((math::#type_Vec2) +(math::#type_Mat4x2) <<8 +(math::#type_Vec4) <<16)
-      math::Mat4x2_mul_Vec4(res, m1, m2)
-CompilerCase ((math::#type_Vec3) +(math::#type_Mat4x3) <<8 +(math::#type_Vec4) <<16)
-      math::Mat4x3_mul_Vec4(res, m1, m2)
-CompilerCase ((math::#type_Vec4) +(math::#type_Mat4x4) <<8 +(math::#type_Vec4) <<16)
-      math::Mat4x4_mul_Vec4(res, m1, m2)
-CompilerCase ((math::#type_Vec2) +(math::#type_Vec2) <<8 +(math::#type_Mat2x2) <<16); vec mat
-      math::Vec2_mul_Mat2x2(res, m1, m2)
-CompilerCase ((math::#type_Vec2) +(math::#type_Vec3) <<8 +(math::#type_Mat2x3) <<16)
-      math::Vec3_mul_Mat2x3(res, m1, m2)
-CompilerCase ((math::#type_Vec2) +(math::#type_Vec4) <<8 +(math::#type_Mat2x4) <<16)
-      math::Vec4_mul_Mat2x4(res, m1, m2)
-CompilerCase ((math::#type_Vec3) +(math::#type_Vec2) <<8 +(math::#type_Mat3x2) <<16)
-      math::Vec2_mul_Mat3x2(res, m1, m2)
-CompilerCase ((math::#type_Vec3) +(math::#type_Vec3) <<8 +(math::#type_Mat3x3) <<16)
-      math::Vec3_mul_Mat3x3(res, m1, m2)
-CompilerCase ((math::#type_Vec3) +(math::#type_Vec4) <<8 +(math::#type_Mat3x4) <<16)
-      math::Vec4_mul_Mat3x4(res, m1, m2)
-CompilerCase ((math::#type_Vec4) +(math::#type_Vec2) <<8 +(math::#type_Mat4x2) <<16)
-      math::Vec2_mul_Mat4x2(res, m1, m2)
-CompilerCase ((math::#type_Vec4) +(math::#type_Vec3) <<8 +(math::#type_Mat4x3) <<16)
-      math::Vec3_mul_Mat4x3(res, m1, m2)
-CompilerCase ((math::#type_Vec4) +(math::#type_Vec4) <<8 +(math::#type_Mat4x4) <<16)
-      math::Vec4_mul_Mat4x4(res, m1, m2)
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x2) <<8 +(math::#type_Mat2x2) <<16);mat mat
-      math::Mat2x2_mul_Mat2x2(res, m1, m2)
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat2x2) <<8 +(math::#type_Mat3x2) <<16)
-      math::Mat2x2_mul_Mat3x2(res, m1, m2)
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat2x2) <<8 +(math::#type_Mat4x2) <<16)
-      math::Mat2x2_mul_Mat4x2(res, m1, m2)
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat2x3) <<8 +(math::#type_Mat2x2) <<16)
-      math::Mat2x3_mul_Mat2x2(res, m1, m2)
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat2x3) <<8 +(math::#type_Mat3x2) <<16)
-      math::Mat2x3_mul_Mat3x2(res, m1, m2)
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat2x3) <<8 +(math::#type_Mat4x2) <<16)
-      math::Mat2x3_mul_Mat4x2(res, m1, m2)
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat2x4) <<8 +(math::#type_Mat2x2) <<16)
-      math::Mat2x4_mul_Mat2x2(res, m1, m2)
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat2x4) <<8 +(math::#type_Mat3x2) <<16)
-      math::Mat2x4_mul_Mat3x2(res, m1, m2)
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat2x4) <<8 +(math::#type_Mat4x2) <<16)
-      math::Mat2x4_mul_Mat4x2(res, m1, m2)
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat3x2) <<8 +(math::#type_Mat2x3) <<16)
-      math::Mat3x2_mul_Mat2x3(res, m1, m2)
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat3x2) <<8 +(math::#type_Mat3x3) <<16)
-      math::Mat3x2_mul_Mat3x3(res, m1, m2)
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat3x2) <<8 +(math::#type_Mat4x3) <<16)
-      math::Mat3x2_mul_Mat4x3(res, m1, m2)
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat3x3) <<8 +(math::#type_Mat2x3) <<16)
-      math::Mat3x3_mul_Mat2x3(res, m1, m2)
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x3) <<8 +(math::#type_Mat3x3) <<16)
-      math::Mat3x3_mul_Mat3x3(res, m1, m2)
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat3x3) <<8 +(math::#type_Mat4x3) <<16)
-      math::Mat3x3_mul_Mat4x3(res, m1, m2)
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat3x4) <<8 +(math::#type_Mat2x3) <<16)
-      math::Mat3x4_mul_Mat2x3(res, m1, m2)
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat3x4) <<8 +(math::#type_Mat3x3) <<16)
-      math::Mat3x4_mul_Mat3x3(res, m1, m2)
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat3x4) <<8 +(math::#type_Mat4x3) <<16)
-      math::Mat3x4_mul_Mat4x3(res, m1, m2)
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat4x2) <<8 +(math::#type_Mat2x4) <<16)
-      math::Mat4x2_mul_Mat2x4(res, m1, m2)
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat4x2) <<8 +(math::#type_Mat3x4) <<16)
-      math::Mat4x2_mul_Mat3x4(res, m1, m2)
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat4x2) <<8 +(math::#type_Mat4x4) <<16)
-      math::Mat4x2_mul_Mat4x4(res, m1, m2)
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat4x3) <<8 +(math::#type_Mat2x4) <<16)
-      math::Mat4x3_mul_Mat2x4(res, m1, m2)
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat4x3) <<8 +(math::#type_Mat3x4) <<16)
-      math::Mat4x3_mul_Mat3x4(res, m1, m2)
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat4x3) <<8 +(math::#type_Mat4x4) <<16)
-      math::Mat4x3_mul_Mat4x4(res, m1, m2)
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat4x4) <<8 +(math::#type_Mat2x4) <<16)
-      math::Mat4x4_mul_Mat2x4(res, m1, m2)
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat4x4) <<8 +(math::#type_Mat3x4) <<16)
-      math::Mat4x4_mul_Mat3x4(res, m1, m2)
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x4) <<8 +(math::#type_Mat4x4) <<16)
-      math::Mat4x4_mul_Mat4x4(res, m1, m2)
-    CompilerDefault
-      CompilerError "[mul] unsupported type"
-  CompilerEndSelect
-EndMacro
-Macro sub(res, m1, m2)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m1\__type0__)&1)<<0) +((TypeOf(m1\__type1__)&1)<<1) +((TypeOf(m1\__type2__)&1)<<2) +((TypeOf(m1\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m2\__type0__)&1)<<0) +((TypeOf(m2\__type1__)&1)<<1) +((TypeOf(m2\__type2__)&1)<<2) + ((TypeOf(m2\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-res\w = m1\w - m2\w
-res\x = m1\x - m2\x
-res\y = m1\y - m2\y
-res\z = m1\z - m2\z
-    CompilerCase math::#type_vec2
-res\x = m1\x - m2\x
-res\y = m1\y - m2\y
-    CompilerCase math::#type_vec3
-res\x = m1\x - m2\x
-res\y = m1\y - m2\y
-res\z = m1\z - m2\z
-    CompilerCase math::#type_vec4
-res\x = m1\x - m2\x
-res\y = m1\y - m2\y
-res\z = m1\z - m2\z
-res\w = m1\w - m2\w
-    CompilerCase math::#type_Mat2x2
-      math::Mat2x2_sub(res, m1, m2)
-    CompilerCase math::#type_Mat2x3
-      math::Mat2x3_sub(res, m1, m2)
-    CompilerCase math::#type_Mat2x4
-      math::Mat2x4_sub(res, m1, m2)
-    CompilerCase math::#type_Mat3x2
-      math::Mat3x2_sub(res, m1, m2)
-    CompilerCase math::#type_Mat3x3
-      math::Mat3x3_sub(res, m1, m2)
-    CompilerCase math::#type_Mat3x4
-      math::Mat3x4_sub(res, m1, m2)
-    CompilerCase math::#type_Mat4x2
-      math::Mat4x2_sub(res, m1, m2)
-    CompilerCase math::#type_Mat4x3
-      math::Mat4x3_sub(res, m1, m2)
-    CompilerCase math::#type_Mat4x4
-      math::Mat4x4_sub(res, m1, m2)
-    CompilerDefault
-      CompilerError "[sub] unsupported type"
-  CompilerEndSelect
-EndMacro
-Macro set_float(res, f0=0.0,f1=,f2=,f3=,f4=,f5=,f6=,f7=,f8=,f9=,f10=,f11=,f12=,f13=,f14=,f15=)
-CompilerIf (_math::dq#f1#_math::dq = "");set Scalar
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-      CompilerCase math::#type_quat
-res\w =(f0)
-res\x =(f0)
-res\y =(f0)
-res\z =(f0)
-      CompilerCase math::#type_vec2
-res\x =(f0)
-res\y =(f0)
-      CompilerCase math::#type_vec3
-res\x =(f0)
-res\y =(f0)
-res\z =(f0)
-      CompilerCase math::#type_vec4
-res\x =(f0)
-res\y =(f0)
-res\z =(f0)
-res\w =(f0)
-      CompilerCase math::#type_Mat2x2
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-      CompilerCase math::#type_Mat2x3
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-res\column[1]\z = 0.0
-      CompilerCase math::#type_Mat2x4
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-      CompilerCase math::#type_Mat3x2
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-      CompilerCase math::#type_Mat3x3
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-res\column[1]\z = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = f0
-      CompilerCase math::#type_Mat3x4
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = f0
-res\column[2]\w = 0.0
-      CompilerCase math::#type_Mat4x2
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-      CompilerCase math::#type_Mat4x3
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-res\column[1]\z = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = f0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-      CompilerCase math::#type_Mat4x4
-res\column[0]\x = f0
-res\column[0]\y = 0.0
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = 0.0
-res\column[1]\y = f0
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = f0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = f0
-      CompilerDefault
-        CompilerError "[set_float] unsupported type"
-    CompilerEndSelect
-  CompilerElse
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-      CompilerCase math::#type_quat
-res\x = f1
-res\y = f2
-res\z = f3
-res\w = f0
-      CompilerCase math::#type_vec2
-res\x = f0
-res\y = f1
-      CompilerCase math::#type_vec3
-res\x = f0
-res\y = f1
-res\z = f2
-      CompilerCase math::#type_vec4
-res\x = f0
-res\y = f1
-res\z = f2
-res\w = f3
-      CompilerCase math::#type_Mat2x2
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[1]\x = f2
-res\column[1]\y = f3
-      CompilerCase math::#type_Mat2x3
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[0]\z = f2
-res\column[1]\x = f3
-res\column[1]\y = f4
-res\column[1]\z = f5
-      CompilerCase math::#type_Mat2x4
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[0]\z = f2
-res\column[0]\w = f3
-res\column[1]\x = f4
-res\column[1]\y = f5
-res\column[1]\z = f6
-res\column[1]\w = f7
-      CompilerCase math::#type_Mat3x2
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[1]\x = f2
-res\column[1]\y = f3
-res\column[2]\x = f4
-res\column[2]\y = f5
-      CompilerCase math::#type_Mat3x3
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[0]\z = f2
-res\column[1]\x = f3
-res\column[1]\y = f4
-res\column[1]\z = f5
-res\column[2]\x = f6
-res\column[2]\y = f7
-res\column[2]\z = f8
-      CompilerCase math::#type_Mat3x4
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[0]\z = f2
-res\column[0]\w = f3
-res\column[1]\x = f4
-res\column[1]\y = f5
-res\column[1]\z = f6
-res\column[1]\w = f7
-res\column[2]\x = f8
-res\column[2]\y = f9
-res\column[2]\z = f10
-res\column[2]\w = f11
-      CompilerCase math::#type_Mat4x2
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[1]\x = f2
-res\column[1]\y = f3
-res\column[2]\x = f4
-res\column[2]\y = f5
-res\column[3]\x = f6
-res\column[3]\y = f7
-      CompilerCase math::#type_Mat4x3
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[0]\z = f2
-res\column[1]\x = f3
-res\column[1]\y = f4
-res\column[1]\z = f5
-res\column[2]\x = f6
-res\column[2]\y = f7
-res\column[2]\z = f8
-res\column[3]\x = f9
-res\column[3]\y = f10
-res\column[3]\z = f11
-      CompilerCase math::#type_Mat4x4
-res\column[0]\x = f0
-res\column[0]\y = f1
-res\column[0]\z = f2
-res\column[0]\w = f3
-res\column[1]\x = f4
-res\column[1]\y = f5
-res\column[1]\z = f6
-res\column[1]\w = f7
-res\column[2]\x = f8
-res\column[2]\y = f9
-res\column[2]\z = f10
-res\column[2]\w = f11
-res\column[3]\x = f12
-res\column[3]\y = f13
-res\column[3]\z = f14
-res\column[3]\w = f15
-      CompilerDefault
-        CompilerError "[set_float] unsupported type"
-    CompilerEndSelect
-  CompilerEndIf
-EndMacro
-Macro set(res, m, v1=, v2=, v3=)
-CompilerSelect(((((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3))) +((((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3)))<<8)
-CompilerCase ((math::#type_quat) +(math::#type_quat) <<8);quat
-res\w = m\w
-res\x = m\x
-res\y = m\y
-res\z = m\z
-CompilerCase ((math::#type_quat) +(math::#type_vec3) <<8)
-      CompilerIf _math::dq#v1#_math::dq = ""
-        math::quat_set_eulerAngle(res, m)
-      CompilerElse
-        math::quat_set_vec3_vec3(res, m, v1)
-      CompilerEndIf      
-CompilerCase ((math::#type_quat) +(math::#type_mat3x3) <<8)
-      math::quat_set_mat3x3(res, m)
-CompilerCase ((math::#type_quat) +(math::#type_mat4x4) <<8)
-      math::quat_set_mat4x4(res, m)
-CompilerCase ((math::#type_mat3x3) +(math::#type_quat) <<8)
-      math::mat3x3_set_quat(res, m)
-CompilerCase ((math::#type_mat4x4) +(math::#type_quat) <<8)
-      math::mat4x4_set_quat(res, m)
-CompilerCase ((math::#type_Mat2x2) +(math::#type_vec2) <<8);mat vec
-      math::Mat2x2_set_Vec2(res, m, v1)
-CompilerCase ((math::#type_Mat2x3) +(math::#type_vec3) <<8)
-      math::Mat2x3_set_Vec3(res, m, v1)
-CompilerCase ((math::#type_Mat2x4) +(math::#type_vec4) <<8)
-      math::Mat2x4_set_Vec4(res, m, v1)
-CompilerCase ((math::#type_Mat3x2) +(math::#type_vec2) <<8)
-      math::Mat3x2_set_Vec2(res, m, v1, v2)
-CompilerCase ((math::#type_Mat3x3) +(math::#type_vec3) <<8)
-      math::Mat3x3_set_Vec3(res, m, v1, v2)
-CompilerCase ((math::#type_Mat3x4) +(math::#type_vec4) <<8)
-      math::Mat3x4_set_Vec4(res, m, v1, v2)
-CompilerCase ((math::#type_Mat4x2) +(math::#type_vec2) <<8)
-      math::Mat4x2_set_Vec2(res, m, v1, v2, v3)
-CompilerCase ((math::#type_Mat4x3) +(math::#type_vec3) <<8)
-      math::Mat4x3_set_Vec3(res, m, v1, v2, v3)
-CompilerCase ((math::#type_Mat4x4) +(math::#type_vec4) <<8)
-      math::Mat4x4_set_Vec4(res, m, v1, v2, v3)
-CompilerCase ((math::#type_vec2) +(math::#type_vec2) <<8);vec vec
-res\x = m\x
-res\y = m\y
-CompilerCase ((math::#type_vec2) +(math::#type_vec3) <<8)
-res\x = m\x
-res\y = m\y
-CompilerCase ((math::#type_vec2) +(math::#type_vec4) <<8)
-res\x = m\x
-res\y = m\y
-CompilerCase ((math::#type_vec3) +(math::#type_vec2) <<8);vec vec
-res\x = m\x
-res\y = m\y
-res\z = 0
-CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8)
-res\x = m\x
-res\y = m\y
-res\z = m\z
-CompilerCase ((math::#type_vec3) +(math::#type_vec4) <<8)
-res\x = m\x
-res\y = m\y
-res\z = m\z
-CompilerCase ((math::#type_vec4) +(math::#type_vec3) <<8);vec vec
-res\x = m\x
-res\y = m\y
-res\z = m\z
-res\w = 0
-CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8)
-res\x = m\x
-res\y = m\y
-res\z = m\z
-res\w = m\w
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x2) <<8);mat mat
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat2x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat2x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat2x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat2x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat2x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = 0.0
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = m\v[2]\w
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = 0.0
-CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = m\v[2]\w
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat2x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat2x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = 0.0
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = m\v[3]\z
-CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = m\v[3]\z
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat2x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat2x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat2x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = 0.0
-res\column[2]\y = 0.0
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat3x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat3x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = 0.0
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat3x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = m\v[2]\w
-res\column[3]\x = 0.0
-res\column[3]\y = 0.0
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x2) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = 0.0
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = 0.0
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = 1.0
-res\column[2]\w = 0.0
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = 0.0
-res\column[3]\w = 1.0
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x3) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = 0.0
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = 0.0
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = 0.0
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = m\v[3]\z
-res\column[3]\w = 1.0
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x4) <<8)
-res\column[0]\x = m\v[0]\x
-res\column[0]\y = m\v[0]\y
-res\column[0]\z = m\v[0]\z
-res\column[0]\w = m\v[0]\w
-res\column[1]\x = m\v[1]\x
-res\column[1]\y = m\v[1]\y
-res\column[1]\z = m\v[1]\z
-res\column[1]\w = m\v[1]\w
-res\column[2]\x = m\v[2]\x
-res\column[2]\y = m\v[2]\y
-res\column[2]\z = m\v[2]\z
-res\column[2]\w = m\v[2]\w
-res\column[3]\x = m\v[3]\x
-res\column[3]\y = m\v[3]\y
-res\column[3]\z = m\v[3]\z
-res\column[3]\w = m\v[3]\w
-    CompilerDefault
-      CompilerError "[set] unsupported type"
-  CompilerEndSelect
-EndMacro
-Macro Scalar_let(res, s, op, m)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-res\x =(s) op m\x
-res\y =(s) op m\y
-res\z =(s) op m\z
-res\w =(s) op m\w
-    CompilerCase math::#type_vec2
-res\x =(s) op m\x
-res\y =(s) op m\y
-    CompilerCase math::#type_vec3
-res\x =(s) op m\x
-res\y =(s) op m\y
-res\z =(s) op m\z
-    CompilerCase math::#type_vec4
-res\x =(s) op m\x
-res\y =(s) op m\y
-res\z =(s) op m\z
-res\w =(s) op m\w
-    CompilerCase math::#type_Mat2x2
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-    CompilerCase math::#type_Mat2x3
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-    CompilerCase math::#type_Mat2x4
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[0]\w =(s) op m\column[0]\w
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[1]\w =(s) op m\column[1]\w
-    CompilerCase math::#type_Mat3x2
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-    CompilerCase math::#type_Mat3x3
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[2]\z =(s) op m\column[2]\z
-    CompilerCase math::#type_Mat3x4
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[0]\w =(s) op m\column[0]\w
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[1]\w =(s) op m\column[1]\w
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[2]\z =(s) op m\column[2]\z
-res\column[2]\w =(s) op m\column[2]\w
-    CompilerCase math::#type_Mat4x2
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[3]\x =(s) op m\column[3]\x
-res\column[3]\y =(s) op m\column[3]\y
-    CompilerCase math::#type_Mat4x3
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[2]\z =(s) op m\column[2]\z
-res\column[3]\x =(s) op m\column[3]\x
-res\column[3]\y =(s) op m\column[3]\y
-res\column[3]\z =(s) op m\column[3]\z
-    CompilerCase math::#type_Mat4x4
-res\column[0]\x =(s) op m\column[0]\x
-res\column[0]\y =(s) op m\column[0]\y
-res\column[0]\z =(s) op m\column[0]\z
-res\column[0]\w =(s) op m\column[0]\w
-res\column[1]\x =(s) op m\column[1]\x
-res\column[1]\y =(s) op m\column[1]\y
-res\column[1]\z =(s) op m\column[1]\z
-res\column[1]\w =(s) op m\column[1]\w
-res\column[2]\x =(s) op m\column[2]\x
-res\column[2]\y =(s) op m\column[2]\y
-res\column[2]\z =(s) op m\column[2]\z
-res\column[2]\w =(s) op m\column[2]\w
-res\column[3]\x =(s) op m\column[3]\x
-res\column[3]\y =(s) op m\column[3]\y
-res\column[3]\z =(s) op m\column[3]\z
-res\column[3]\w =(s) op m\column[3]\w
-    CompilerDefault
-      CompilerError "[scalar_let] unsupported type"
-  CompilerEndSelect
-EndMacro
-Macro let_Scalar(res, m, op, s)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-res\w = m\w op(s)
-res\x = m\x op(s)
-res\y = m\y op(s)
-res\z = m\z op(s)
-    CompilerCase math::#type_vec2
-res\x = m\x op(s)
-res\y = m\y op(s)
-    CompilerCase math::#type_vec3
-res\x = m\x op(s)
-res\y = m\y op(s)
-res\z = m\z op(s)
-    CompilerCase math::#type_vec4
-res\x = m\x op(s)
-res\y = m\y op(s)
-res\z = m\z op(s)
-res\w = m\w op(s)
-    CompilerCase math::#type_Mat2x2
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-    CompilerCase math::#type_Mat2x3
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-    CompilerCase math::#type_Mat2x4
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[0]\w = m\column[0]\w op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[1]\w = m\column[1]\w op(s)
-    CompilerCase math::#type_Mat3x2
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-    CompilerCase math::#type_Mat3x3
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[2]\z = m\column[2]\z op(s)
-    CompilerCase math::#type_Mat3x4
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[0]\w = m\column[0]\w op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[1]\w = m\column[1]\w op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[2]\z = m\column[2]\z op(s)
-res\column[2]\w = m\column[2]\w op(s)
-    CompilerCase math::#type_Mat4x2
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[3]\x = m\column[3]\x op(s)
-res\column[3]\y = m\column[3]\y op(s)
-    CompilerCase math::#type_Mat4x3
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[2]\z = m\column[2]\z op(s)
-res\column[3]\x = m\column[3]\x op(s)
-res\column[3]\y = m\column[3]\y op(s)
-res\column[3]\z = m\column[3]\z op(s)
-    CompilerCase math::#type_Mat4x4
-res\column[0]\x = m\column[0]\x op(s)
-res\column[0]\y = m\column[0]\y op(s)
-res\column[0]\z = m\column[0]\z op(s)
-res\column[0]\w = m\column[0]\w op(s)
-res\column[1]\x = m\column[1]\x op(s)
-res\column[1]\y = m\column[1]\y op(s)
-res\column[1]\z = m\column[1]\z op(s)
-res\column[1]\w = m\column[1]\w op(s)
-res\column[2]\x = m\column[2]\x op(s)
-res\column[2]\y = m\column[2]\y op(s)
-res\column[2]\z = m\column[2]\z op(s)
-res\column[2]\w = m\column[2]\w op(s)
-res\column[3]\x = m\column[3]\x op(s)
-res\column[3]\y = m\column[3]\y op(s)
-res\column[3]\z = m\column[3]\z op(s)
-res\column[3]\w = m\column[3]\w op(s)
-    CompilerDefault
-      CompilerError "[let_Scalar] unsupported type"
-  CompilerEndSelect
-EndMacro
-Macro div(res, m1, m2)
-CompilerSelect(((((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3))) +((((TypeOf(m1\__type0__)&1)<<0) +((TypeOf(m1\__type1__)&1)<<1) +((TypeOf(m1\__type2__)&1)<<2) +((TypeOf(m1\__type3__)&1)<<3))) <<8 +((((TypeOf(m2\__type0__)&1)<<0) +((TypeOf(m2\__type1__)&1)<<1) +((TypeOf(m2\__type2__)&1)<<2) + ((TypeOf(m2\__type3__)&1)<<3)))<<16)
-CompilerCase ((math::#type_vec2) +(math::#type_Mat2x2) <<8 +(math::#type_vec2) <<16); mat vec
-      math::Mat2x2_div_Vec2(res, m1, m2)
-CompilerCase ((math::#type_vec3) +(math::#type_Mat3x3) <<8 +(math::#type_vec3) <<16)
-      math::Mat3x3_div_Vec3(res, m1, m2)
-CompilerCase ((math::#type_vec4) +(math::#type_Mat4x4) <<8 +(math::#type_vec4) <<16)
-      math::Mat4x4_div_Vec4(res, m1, m2)
-    CompilerDefault
-CompilerCase ((math::#type_vec2) +(math::#type_vec2) <<8 +(math::#type_Mat2x2) <<16); mat/vec
-      math::Vec2_div_Mat2x2(res, m1, m2)
-CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8 +(math::#type_Mat3x3) <<16)
-      math::Vec3_div_Mat3x3(res, m1, m2)
-CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8 +(math::#type_Mat4x4) <<16)
-      math::Vec4_div_Mat4x4(res, m1, m2)
-CompilerCase ((math::#type_vec2) +(math::#type_vec2) <<8 +(math::#type_vec2) <<16); vec
-res\x = m1\x / m2\x
-res\y = m1\y / m2\y
-CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8 +(math::#type_vec3) <<16)
-res\x = m1\x / m2\x
-res\y = m1\y / m2\y
-res\z = m1\z / m2\z
-CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8 +(math::#type_vec4) <<16)
-res\x = m1\x / m2\x
-res\y = m1\y / m2\y
-res\z = m1\z / m2\z
-res\w = m1\w / m2\w
-CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x2) <<8 +(math::#type_Mat2x2) <<16); mat
-      math::Mat2x2_div(res, m1, m2)
-CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x3) <<8 +(math::#type_Mat3x3) <<16)
-      math::Mat3x3_div(res, m1, m2)
-CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x4) <<8 +(math::#type_Mat4x4) <<16)
-      math::Mat4x4_div(res, m1, m2)
-    CompilerDefault
-      CompilerError "[div] unsupported type"
-  CompilerEndSelect
-EndMacro
-Macro let(res, v1, op, v2)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v1\__type0__)&1)<<0) +((TypeOf(v1\__type1__)&1)<<1) +((TypeOf(v1\__type2__)&1)<<2) +((TypeOf(v1\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v2\__type0__)&1)<<0) +((TypeOf(v2\__type1__)&1)<<1) +((TypeOf(v2\__type2__)&1)<<2) + ((TypeOf(v2\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-    CompilerCase math::#type_vec2
-res\x = v1\x op v2\x
-res\y = v1\y op v2\y
-    CompilerCase math::#type_vec3
-res\x = v1\x op v2\x
-res\y = v1\y op v2\y
-res\z = v1\z op v2\z
-    CompilerCase math::#type_vec4
-res\x = v1\x op v2\x
-res\y = v1\y op v2\y
-res\z = v1\z op v2\z
-res\w = v1\w op v2\w
-    CompilerDefault      
-      CompilerSelect _math::sq#op#_math::sq
-        CompilerCase '+'
-          add(res,v1,v2)
-        CompilerCase '-'
-          sub(res,v1,v2)
-        CompilerCase '*'
-          mul(res,v1,v2)
-        CompilerCase '/'
-          div(res,v1,v2)
-      CompilerEndSelect 
-  CompilerEndSelect
-EndMacro
-Macro inverse(res, m)  
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(M\__type0__)&1)<<0) +((TypeOf(M\__type1__)&1)<<1) +((TypeOf(M\__type2__)&1)<<2) + ((TypeOf(M\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-      math::quat_inverse(res, M)
-    CompilerCase math::#type_Mat2x2
-      math::Mat2x2_inverse(res, m)       
-    CompilerCase math::#type_Mat3x3
-      math::Mat3x3_inverse(res, m)       
-    CompilerCase math::#type_Mat4x4
-      math::Mat4x4_inverse(res, m)       
-    CompilerDefault
-      Debug "[inverse] Not supported type"
-  CompilerEndSelect  
-EndMacro
-Macro transpose(res, m)  
-CompilerSelect(((((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3))) +((((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3)))<<8)
-CompilerCase ((math::#type_mat2x2) +(math::#type_mat2x2) <<8)
-      math::mat2x2_transpose(res, m)
-CompilerCase ((math::#type_mat2x3) +(math::#type_mat3x2) <<8)
-      math::mat2x3_transpose(res, m)      
-CompilerCase ((math::#type_mat2x4) +(math::#type_mat4x2) <<8)
-      math::mat2x4_transpose(res, m)
-CompilerCase ((math::#type_mat3x2) +(math::#type_mat2x3) <<8)
-      math::mat3x2_transpose(res, m)
-CompilerCase ((math::#type_mat3x3) +(math::#type_mat3x3) <<8)
-      math::mat3x3_transpose(res, m)
-CompilerCase ((math::#type_mat3x4) +(math::#type_mat4x3) <<8)
-      math::mat3x4_transpose(res, m)
-CompilerCase ((math::#type_mat4x2) +(math::#type_mat2x4) <<8)
-      math::mat4x2_transpose(res, m)
-CompilerCase ((math::#type_mat4x3) +(math::#type_mat3x4) <<8)
-      math::mat4x3_transpose(res, m)
-CompilerCase ((math::#type_mat4x4) +(math::#type_mat4x4) <<8)
-      math::mat4x4_transpose(res, m)
-    CompilerDefault
-      CompilerError "[transpose] Not supported mat"
-  CompilerEndSelect  
-EndMacro
-Macro determinant(m)
-_math::compute_determinant(m,(((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3)))
-EndMacro
-Macro cross(res, x, y)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(x\__type0__)&1)<<0) +((TypeOf(x\__type1__)&1)<<1) +((TypeOf(x\__type2__)&1)<<2) +((TypeOf(x\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(y\__type0__)&1)<<0) +((TypeOf(y\__type1__)&1)<<1) +((TypeOf(y\__type2__)&1)<<2) + ((TypeOf(y\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-    CompilerCase  math::#type_vec3      
-      math::Vec3_Cross(res, x, y)
-    CompilerCase math::#type_quat
-      math::quat_cross(res, x, y)
-    Default
-      CompilerError("[cross] Type Mismatch")
-  CompilerEndSelect
-EndMacro
-Macro dot(a, b)
-_math::compute_Dot(a,(((TypeOf(a\__type0__)&1)<<0) +((TypeOf(a\__type1__)&1)<<1) +((TypeOf(a\__type2__)&1)<<2) + ((TypeOf(a\__type3__)&1)<<3)), b)
-EndMacro
-Macro length(a)
-Sqr(_math::compute_Dot(a,(((TypeOf(a\__type0__)&1)<<0) +((TypeOf(a\__type1__)&1)<<1) +((TypeOf(a\__type2__)&1)<<2) + ((TypeOf(a\__type3__)&1)<<3)), a))
-EndMacro
-Macro length2(a)
-_math::compute_Dot(a,(((TypeOf(a\__type0__)&1)<<0) +((TypeOf(a\__type1__)&1)<<1) +((TypeOf(a\__type2__)&1)<<2) + ((TypeOf(a\__type3__)&1)<<3)), a)
-EndMacro
-Macro normalize(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)) = math::#type_quat
-    math::quat_normalize(res, v)
-  CompilerElse
-_math::compute_normalize(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), v)
-  CompilerEndIf
 EndMacro
 ;}
 ;-----------------------
@@ -4250,93 +1642,174 @@ Declare.f ASinH_f(x.f)
 Declare.f acosh_f(x.f)
 Declare.f ATanH_f(x.f)
 Macro radians(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@radians_f(), v)
 EndMacro
 Macro degrees(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@degrees_f(), v)
 EndMacro
 Macro Sin(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@sin_f(), v)
 EndMacro
 Macro Cos(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@Cos_f(), v)
 EndMacro
 Macro Tan(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@tan_f(), v)
 EndMacro
 Macro ASin(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@asin_f(), v)
 EndMacro
 Macro ACos(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@acos_f(), v)
 EndMacro
 Macro ATan(res, v, u)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) +((TypeOf(v\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(u\__type0__)&1)<<0) +((TypeOf(u\__type1__)&1)<<1) +((TypeOf(u\__type2__)&1)<<2) + ((TypeOf(u\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function2(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@atan_f(), v, u)
 EndMacro
 Macro SinH(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@SinH_f(), v)
 EndMacro
 Macro CosH(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@CosH_f(), v)
 EndMacro
 Macro TanH(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@TanH_f(), v)
 EndMacro
 Macro ASinH(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@ASinH_f(), v)
 EndMacro
 Macro ACosH(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@acosh_f(), v)
 EndMacro
 Macro ATanH(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@ATanH_f(), v)
 EndMacro
+Macro Vec2_radians(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@radians_f(), v)
+EndMacro
+Macro Vec2_degrees(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@degrees_f(), v)
+EndMacro
+Macro Vec2_Sin(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@sin_f(), v)
+EndMacro
+Macro Vec2_Cos(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@Cos_f(), v)
+EndMacro
+Macro Vec2_Tan(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@tan_f(), v)
+EndMacro
+Macro Vec2_ASin(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@asin_f(), v)
+EndMacro
+Macro Vec2_ACos(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@acos_f(), v)
+EndMacro
+Macro Vec2_ATan(res, v, u)
+  _math::compute_function2(res, math::#type_vec2, math::@atan_f(), v, u)
+EndMacro
+Macro Vec2_SinH(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@SinH_f(), v)
+EndMacro
+Macro Vec2_CosH(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@CosH_f(), v)
+EndMacro
+Macro Vec2_TanH(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@TanH_f(), v)
+EndMacro
+Macro Vec2_ASinH(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@ASinH_f(), v)
+EndMacro
+Macro Vec2_ACosH(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@acosh_f(), v)
+EndMacro
+Macro Vec2_ATanH(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@ATanH_f(), v)
+EndMacro
+Macro Vec3_radians(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@radians_f(), v)
+EndMacro
+Macro Vec3_degrees(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@degrees_f(), v)
+EndMacro
+Macro Vec3_Sin(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@sin_f(), v)
+EndMacro
+Macro Vec3_Cos(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@Cos_f(), v)
+EndMacro
+Macro Vec3_Tan(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@tan_f(), v)
+EndMacro
+Macro Vec3_ASin(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@asin_f(), v)
+EndMacro
+Macro Vec3_ACos(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@acos_f(), v)
+EndMacro
+Macro Vec3_ATan(res, v, u)
+  _math::compute_function2(res, math::#type_vec3, math::@atan_f(), v, u)
+EndMacro
+Macro Vec3_SinH(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@SinH_f(), v)
+EndMacro
+Macro Vec3_CosH(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@CosH_f(), v)
+EndMacro
+Macro Vec3_TanH(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@TanH_f(), v)
+EndMacro
+Macro Vec3_ASinH(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@ASinH_f(), v)
+EndMacro
+Macro Vec3_ACosH(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@acosh_f(), v)
+EndMacro
+Macro Vec3_ATanH(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@ATanH_f(), v)
+EndMacro
+Macro Vec4_radians(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@radians_f(), v)
+EndMacro
+Macro Vec4_degrees(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@degrees_f(), v)
+EndMacro
+Macro Vec4_Sin(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@sin_f(), v)
+EndMacro
+Macro Vec4_Cos(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@Cos_f(), v)
+EndMacro
+Macro Vec4_Tan(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@tan_f(), v)
+EndMacro
+Macro Vec4_ASin(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@asin_f(), v)
+EndMacro
+Macro Vec4_ACos(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@acos_f(), v)
+EndMacro
+Macro Vec4_ATan(res, v, u)
+  _math::compute_function2(res, math::#type_vec4, math::@atan_f(), v, u)
+EndMacro
+Macro Vec4_SinH(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@SinH_f(), v)
+EndMacro
+Macro Vec4_CosH(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@CosH_f(), v)
+EndMacro
+Macro Vec4_TanH(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@TanH_f(), v)
+EndMacro
+Macro Vec4_ASinH(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@ASinH_f(), v)
+EndMacro
+Macro Vec4_ACosH(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@acosh_f(), v)
+EndMacro
+Macro Vec4_ATanH(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@ATanH_f(), v)
+EndMacro
 ;}
-  ; exclude func_packing
-  ; exclude func_integer
-  ;ext
 ;-----------------------
 ;- matrix_clip_space.pbi
 ;{
@@ -4400,56 +1873,18 @@ Declare pickMatrix(*res.mat4x4, *center.vec2, *delta.vec2, *viewport.vec4)
 ;{
 
 Declare translate(*res.mat4x4, *m.mat4x4, *v.vec3)
-Declare mat4x4_rotate(*res.mat4x4, *m.mat4x4, angle.f, *v.vec3)
+Declare translate_float(*res.mat4x4, *m.mat4x4, x.f,y.f,z.f)
+Declare rotate(*res.mat4x4, *m.mat4x4, angle.f, *v.vec3)
+Declare rotate_float(*res.mat4x4, *m.mat4x4, angle.f, x.f,y.f,z.f)
 Declare rotate_slow(*res.mat4x4, *m.mat4x4, angle.f, *v.vec3)
+Declare rotate_slow_float(*res.mat4x4, *m.mat4x4, angle.f, x.f,y.f,z.f)
 Declare scale(*res.mat4x4, *m.mat4x4, *v.vec3)
+Declare scale_float(*res.mat4x4, *m.mat4x4, x.f,y.f,z.f)
 Declare scale_slow(*res.mat4x4, *m.mat4x4, *v.vec3)
-Declare mat4x4_lookAtRH(*res.mat4x4, *eye.vec3, *center.vec3, *up.vec3)
-Declare mat4x4_lookAtLH(*res.mat4x4, *eye.vec3, *center.vec3, *up.vec3)
-Declare mat4x4_lookAt(*res.mat4x4, *eye.vec3, *center.vec3, *up.vec3)
-Macro rotate(res,m, anglef, vec3)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
-CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-      math::quat_rotate(res,m, anglef, vec3)
-    CompilerCase math::#type_mat4x4
-      math::mat4x4_rotate(res,m, anglef, vec3)
-    CompilerDefault
-      CompilerError "[rotate] only support mat4x4 and quat"
-  CompilerEndSelect
-EndMacro
-Macro LookAt(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3, noneOrUp_vec3=)
-CompilerSelect(((TypeOf(resQuatOrMat4x4\__type0__)&1)<<0) +((TypeOf(resQuatOrMat4x4\__type1__)&1)<<1) +((TypeOf(resQuatOrMat4x4\__type2__)&1)<<2) + ((TypeOf(resQuatOrMat4x4\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-      math::quat_LookAt(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3)
-    CompilerCase math::#type_mat4x4
-      math::mat4x4_lookAt(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3, noneOrUp_vec3)
-    CompilerDefault
-      CompilerError "[LookAt] only supports quat and mat4x4"
-  CompilerEndSelect
-EndMacro
-Macro LookAtRH(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3, noneOrUp_vec3=)
-CompilerSelect(((TypeOf(resQuatOrMat4x4\__type0__)&1)<<0) +((TypeOf(resQuatOrMat4x4\__type1__)&1)<<1) +((TypeOf(resQuatOrMat4x4\__type2__)&1)<<2) + ((TypeOf(resQuatOrMat4x4\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-      math::quat_LookAtRH(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3)
-    CompilerCase math::#type_mat4x4
-      math::mat4x4_lookAtRH(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3, noneOrUp_vec3)
-    CompilerDefault
-      CompilerError "[LookAt] only supports quat and mat4x4"
-  CompilerEndSelect
-EndMacro
-Macro LookAtLH(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3, noneOrUp_vec3=)
-CompilerSelect(((TypeOf(resQuatOrMat4x4\__type0__)&1)<<0) +((TypeOf(resQuatOrMat4x4\__type1__)&1)<<1) +((TypeOf(resQuatOrMat4x4\__type2__)&1)<<2) + ((TypeOf(resQuatOrMat4x4\__type3__)&1)<<3))
-    CompilerCase math::#type_quat
-      math::quat_LookAtLH(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3)
-    CompilerCase math::#type_mat4x4
-      math::mat4x4_lookAtLH(resQuatOrMat4x4, DirectionOrEye_Vec3, UpOrCenter_vec3, noneOrUp_vec3)
-    CompilerDefault
-      CompilerError "[LookAt] only supports quat and mat4x4"
-  CompilerEndSelect
-EndMacro
+Declare scale_slow_float(*res.mat4x4, *m.mat4x4, x.f,y.f,z.f)
+Declare lookAtRH(*res.mat4x4, *eye.vec3, *center.vec3, *up.vec3)
+Declare lookAtLH(*res.mat4x4, *eye.vec3, *center.vec3, *up.vec3)
+Declare lookAt(*res.mat4x4, *eye.vec3, *center.vec3, *up.vec3)
 ;}
 ;-----------------------
 ;- quaternion.pbi
@@ -4493,95 +1928,48 @@ EndStructure
 ;- type_quat.pbi
 ;{
 
-Macro quat_set(res, wf=1.0, xf=0.0, yf=0.0, zf=0.0)
-  res\x = xf
-  res\y = yf
-  res\z = zf
-  res\w = wf
-EndMacro
 Macro quat_const(label, wf,xf, yf, zf)
   DataSection
     label:
     Data.f wf, xf, yf, zf
   EndDataSection
 EndMacro
-Macro quat_set_Scalar(res, s)
-  res\w = (s)
-  res\x = (s)
-  res\y = (s)
-  res\z = (s)  
-EndMacro
-Macro quat_set_quat(res, v)
-  res\w = v\w
-  res\x = v\x
-  res\y = v\y
-  res\z = v\z  
-EndMacro
-Macro quat_set_f_vec3(res,s,v)
-  res\w = s
-  res\x = v\x
-  res\y = v\y
-  res\z = v\z
-EndMacro
-Declare quat_set_vec3_vec3(*res.quat, *u.vec3, *v.vec3)
+Declare quat_set_float(*res.quat, w.f=1.0, x.f=0.0, y.f=0.0, z.f=0.0)
+Declare quat_set_Scalar(*res.quat, s.f)
+Declare quat_set(*res.quat, *q.quat)
+Declare quat_set_f_vec3(*res.quat,s.f,*v.vec3)
+Declare Quat_set_vec3_vec3(*res.quat, *u.vec3, *v.vec3)
 Declare quat_set_eulerAngle(*res.quat, *eulerAngle.vec3)
 Declare quat_set_mat3x3(*res.quat, *m.mat3x3)
 Declare quat_set_mat4x4(*res.quat, *m.mat4x4)
 Declare mat3x3_set_quat(*res.mat3x3, *q.quat)
 Declare mat4x4_set_quat(*res.mat4x4, *q.quat)
-; Macro vec4_let(res,v1, op, v2)
-;   res\x = v1\x op v2\x
-;   res\y = v1\y op v2\y
-;   res\z = v1\z op v2\z
-;   res\w = v1\w op v2\w
-; EndMacro
-Macro quat_let_Scalar(res, v, op, s)
-  res\w = v\w op (s)
-  res\x = v\x op (s)
-  res\y = v\y op (s)
-  res\z = v\z op (s)  
-EndMacro
-Macro Scalar_let_quat(res, s, op, v)
-  res\x = (s) op v\x 
-  res\y = (s) op v\y 
-  res\z = (s) op v\z 
-  res\w = (s) op v\w 
-EndMacro
-Macro quat_add(res, q, p)
-  res\w = q\w + p\w
-  res\x = q\x + p\x
-  res\y = q\y + p\y
-  res\z = q\z + p\z
-EndMacro
-Macro quat_sub(res, q, p)
-  res\w = q\w - p\w
-  res\x = q\x - p\x
-  res\y = q\y - p\y
-  res\z = q\z - p\z
-EndMacro
 Declare quat_mul(*res.quat, *q.quat, *p.quat)
 Declare quat_mul_vec3(*res.vec3, *q.quat, *v.vec3)
 Declare vec3_mul_quat(*res.vec3, *v.vec3, *q.quat)
 Declare quat_mul_vec4(*res.vec4, *q.quat, *v.vec4)
 Declare vec4_mul_quat(*res.vec4, *v.vec4, *q.quat)
-Macro quat_isEqual(q, p)
-  Bool(q\w=p\w And q\x=p\x And q\y=p\y And q\z=p\z
-EndMacro
+Declare quat_add_Scalar(*res.quat, *q.quat, s.f)
+Declare quat_sub_Scalar(*res.quat, *q.quat, s.f)
+Declare quat_mul_Scalar(*res.quat, *q.quat, s.f)
+Declare quat_div_Scalar(*res.quat, *q.quat, s.f)
+Declare Scalar_add_quat(*res.quat, s.f, *q.quat)
+Declare Scalar_sub_quat(*res.quat, s.f, *q.quat)
+Declare Scalar_mul_quat(*res.quat, s.f, *q.quat)
+Declare Scalar_div_quat(*res.quat, s.f, *q.quat)
+Declare quat_add(*res.quat, *q.quat, *p.quat)
+Declare quat_sub(*res.quat, *q.quat, *p.quat)
+Declare quat_isEqual(*q.quat, *p.quat)
 ;}
 ;-----------------------
 ;- quaternion_common.pbi
 ;{
 
 Declare quat_mix(*res.quat, *x.quat, *y.quat, a.f)
-Declare lerp(*res.quat, *x.quat, *y.quat, a.f)
-Declare slerp(*res.quat, *x.quat, *y.quat, a.f, k.f = 0)
+Declare quat_lerp(*res.quat, *x.quat, *y.quat, a.f)
+Declare quat_slerp(*res.quat, *x.quat, *y.quat, a.f, k.f = 0)
 Declare quat_inverse(*res.quat, *q.quat)
-Macro conjugate(res, quat)
-  res\w = quat\w
-  res\x = -quat\x
-  res\y = -quat\y
-  res\z = -quat\z
-EndMacro
+Declare quat_conjugate(*res.quat, *q.quat)
 ;}
 ;-----------------------
 ;- quaternion_geometric.pbi
@@ -4630,96 +2018,1054 @@ Declare.f asech_f(x.f)
 Declare.f acsch_f(x.f)
 Declare.f acoth_f(x.f)
 Macro sec(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@sec_f(), v)
 EndMacro
 Macro csc(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@csc_f(), v)
 EndMacro
 Macro cot(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@cot_f(), v)
 EndMacro
 Macro asec(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@asec_f(), v)
 EndMacro
 Macro acsc(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@acsc_f(), v)
 EndMacro
 Macro acot(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@acot_f(), v)
 EndMacro
 Macro sech(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@sech_f(), v)
 EndMacro
 Macro csch(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@csch_f(), v)
 EndMacro
 Macro coth(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@coth_f(), v)
 EndMacro
 Macro asech(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@asech_f(), v)
 EndMacro
 Macro acsch(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@acsch_f(), v)
 EndMacro
 Macro acoth(res, v)
-CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(v\__type0__)&1)<<0) +((TypeOf(v\__type1__)&1)<<1) +((TypeOf(v\__type2__)&1)<<2) + ((TypeOf(v\__type3__)&1)<<3))
-CompilerError "Types must be the same!"
-CompilerEndIf
 _math::compute_function1(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), math::@acoth_f(), v)
+EndMacro
+Macro Vec2_sec(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@sec_f(), v)
+EndMacro
+Macro Vec2_csc(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@csc_f(), v)
+EndMacro
+Macro Vec2_cot(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@cot_f(), v)
+EndMacro
+Macro Vec2_asec(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@asec_f(), v)
+EndMacro
+Macro Vec2_acsc(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@acsc_f(), v)
+EndMacro
+Macro Vec2_acot(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@acot_f(), v)
+EndMacro
+Macro Vec2_sech(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@sech_f(), v)
+EndMacro
+Macro Vec2_csch(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@csch_f(), v)
+EndMacro
+Macro Vec2_coth(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@coth_f(), v)
+EndMacro
+Macro Vec2_asech(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@asech_f(), v)
+EndMacro
+Macro Vec2_acsch(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@acsch_f(), v)
+EndMacro
+Macro Vec2_acoth(res, v)
+  _math::compute_function1(res, math::#type_vec2, math::@acoth_f(), v)
+EndMacro
+Macro Vec3_sec(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@sec_f(), v)
+EndMacro
+Macro Vec3_csc(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@csc_f(), v)
+EndMacro
+Macro Vec3_cot(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@cot_f(), v)
+EndMacro
+Macro Vec3_asec(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@asec_f(), v)
+EndMacro
+Macro Vec3_acsc(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@acsc_f(), v)
+EndMacro
+Macro Vec3_acot(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@acot_f(), v)
+EndMacro
+Macro Vec3_sech(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@sech_f(), v)
+EndMacro
+Macro Vec3_csch(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@csch_f(), v)
+EndMacro
+Macro Vec3_coth(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@coth_f(), v)
+EndMacro
+Macro Vec3_asech(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@asech_f(), v)
+EndMacro
+Macro Vec3_acsch(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@acsch_f(), v)
+EndMacro
+Macro Vec3_acoth(res, v)
+  _math::compute_function1(res, math::#type_vec3, math::@acoth_f(), v)
+EndMacro
+Macro Vec4_sec(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@sec_f(), v)
+EndMacro
+Macro Vec4_csc(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@csc_f(), v)
+EndMacro
+Macro Vec4_cot(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@cot_f(), v)
+EndMacro
+Macro Vec4_asec(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@asec_f(), v)
+EndMacro
+Macro Vec4_acsc(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@acsc_f(), v)
+EndMacro
+Macro Vec4_acot(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@acot_f(), v)
+EndMacro
+Macro Vec4_sech(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@sech_f(), v)
+EndMacro
+Macro Vec4_csch(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@csch_f(), v)
+EndMacro
+Macro Vec4_coth(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@coth_f(), v)
+EndMacro
+Macro Vec4_asech(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@asech_f(), v)
+EndMacro
+Macro Vec4_acsch(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@acsch_f(), v)
+EndMacro
+Macro Vec4_acoth(res, v)
+  _math::compute_function1(res, math::#type_vec4, math::@acoth_f(), v)
 EndMacro
 ;}
 ;-----------------------
 ;- quatemion.pbi
 ;{
 
-Macro Roll(quat)
-  _math::_Roll(quat)
-EndMacro
-Macro Pitch(quat)
-  _math::_Pitch(quat)
-EndMacro
-Macro Yaw(quat)
-  _math::_Yaw(quat)
-EndMacro
-Declare eulerAngles(*res.vec3, *x.quat)
+Declare quat_eulerAngles(*res.vec3, *x.quat)
 Declare quat_LookAt(*res.quat, *direction.vec3, *up.vec3)
 Declare quat_LookAtRH(*res.quat, *direction.vec3, *up.vec3)
 Declare quat_LookAtLH(*res.quat, *direction.vec3, *up.vec3)
+Declare.f quat_Roll(*q.math::quat)
+Declare.f quat_Pitch(*q.math::quat)
+Declare.f quat_Yaw(*q.math::quat)
 ;}
+;-----------------------
+;- euler_angles.pbi
+;{
+
+Declare eulerAngleX(*res.mat4x4, angleX.f)
+Declare eulerAngleY(*res.mat4x4, angleY.f)
+Declare eulerAngleZ(*res.mat4x4, angleZ.f)
+Declare derivedEulerAngleX(*res.mat4x4, angleX.f, angularVelocityX.f)
+Declare derivedEulerAngleY(*res.mat4x4, angleY.f, angularVelocityY.f)
+Declare derivedEulerAngleZ(*res.mat4x4, angleZ.f, angularVelocityZ.f)
+Declare eulerAngleXY(*res.mat4x4, angleX.f, angleY.f)
+Declare eulerAngleYX(*res.mat4x4, angleY.f, angleX.f)
+Declare eulerAngleXZ(*res.mat4x4, angleX.f, angleZ.f)
+Declare eulerAngleZX(*res.mat4x4, angleZ.f, angleX.f)
+Declare eulerAngleYZ(*res.mat4x4, angleY.f, angleZ.f)
+Declare eulerAngleZY(*res.mat4x4, angleZ.f, angleY.f)
+Declare eulerAngleXYZ(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleYXZ(*res.mat4x4, yaw.f, pitch.f, roll.f)
+Declare eulerAngleXZX(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleXYX(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleYXY(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleYZY(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleZYZ(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleZXZ(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleXZY(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleYZX(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleZYX(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare eulerAngleZXY(*res.mat4x4, t1.f, t2.f, t3.f)
+Declare yawPitchRoll(*res.mat4x4, yaw.f, pitch.f, roll.f)
+Declare orientate2(*res.mat2x2, angle.f)
+Declare orientate3_float(*res.mat3x3, angle.f)
+Declare orientate3_vec3(*res.mat3x3, *angles.vec3)
+Declare orientate4(*res.mat4x4, *angles.vec3)
+Declare extractEulerAngleXYZ(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleYXZ(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleXZX(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleXYX(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleYXY(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleYZY(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleZYZ(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleZXZ(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleXZY(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleYZX(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleZYX(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+Declare extractEulerAngleZXY(*M.mat4x4, *t1.float, *t2.float, *t3.float)
+;}
+;-----------------------
+;- dispatcher.pbi
+;{
+
+Macro add(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::quat_add(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::vec2_add(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::vec3_add(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::vec4_add(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::Mat2x2_add(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::Mat2x3_add(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::Mat2x4_add(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::Mat3x2_add(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::Mat3x3_add(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::Mat3x4_add(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::Mat4x2_add(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::Mat4x3_add(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::Mat4x4_add(res, m1, m2)
+    CompilerDefault
+      CompilerError "[add] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro mul(res, m1, m2)
+CompilerSelect(((((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3))) +((((TypeOf(m1\__type0__)&1)<<0) +((TypeOf(m1\__type1__)&1)<<1) +((TypeOf(m1\__type2__)&1)<<2) +((TypeOf(m1\__type3__)&1)<<3))) <<8 +((((TypeOf(m2\__type0__)&1)<<0) +((TypeOf(m2\__type1__)&1)<<1) +((TypeOf(m2\__type2__)&1)<<2) + ((TypeOf(m2\__type3__)&1)<<3)))<<16)
+CompilerCase ((math::#type_quat) +(math::#type_quat) <<8 +(math::#type_quat) <<16);quat
+      math::quat_mul(res, m1, m2)
+CompilerCase ((math::#type_vec3) +(math::#type_quat) <<8 +(math::#type_vec3) <<16)
+      math::quat_mul_vec3(res, m1, m2)
+CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8 +(math::#type_quat) <<16)
+      math::vec3_mul_quat(res, m1, m2)
+CompilerCase ((math::#type_vec4) +(math::#type_quat) <<8 +(math::#type_vec3) <<16)
+      math::quat_mul_vec4(res, m1, m2)
+CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8 +(math::#type_quat) <<16)
+      math::vec4_mul_quat(res, m1, m2)
+CompilerCase ((math::#type_vec2) +(math::#type_vec2) <<8 +(math::#type_vec2) <<16); vec vec
+      math::vec2_mul(res, m1, m2)
+CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8 +(math::#type_vec3) <<16)
+      math::vec3_mul(res, m1, m2)
+CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8 +(math::#type_vec4) <<16)
+      math::vec4_mul(res, m1, m2)
+CompilerCase ((math::#type_Vec2) +(math::#type_Mat2x2) <<8 +(math::#type_Vec2) <<16); mat vec
+      math::Mat2x2_mul_Vec2(res, m1, m2)
+CompilerCase ((math::#type_Vec3) +(math::#type_Mat2x3) <<8 +(math::#type_Vec2) <<16)
+      math::Mat2x3_mul_Vec2(res, m1, m2)
+CompilerCase ((math::#type_Vec4) +(math::#type_Mat2x4) <<8 +(math::#type_Vec2) <<16)
+      math::Mat2x4_mul_Vec2(res, m1, m2)
+CompilerCase ((math::#type_Vec2) +(math::#type_Mat3x2) <<8 +(math::#type_Vec3) <<16)
+      math::Mat3x2_mul_Vec3(res, m1, m2)
+CompilerCase ((math::#type_Vec3) +(math::#type_Mat3x3) <<8 +(math::#type_Vec3) <<16)
+      math::Mat3x3_mul_Vec3(res, m1, m2)
+CompilerCase ((math::#type_Vec4) +(math::#type_Mat3x4) <<8 +(math::#type_Vec3) <<16)
+      math::Mat3x4_mul_Vec3(res, m1, m2)
+CompilerCase ((math::#type_Vec2) +(math::#type_Mat4x2) <<8 +(math::#type_Vec4) <<16)
+      math::Mat4x2_mul_Vec4(res, m1, m2)
+CompilerCase ((math::#type_Vec3) +(math::#type_Mat4x3) <<8 +(math::#type_Vec4) <<16)
+      math::Mat4x3_mul_Vec4(res, m1, m2)
+CompilerCase ((math::#type_Vec4) +(math::#type_Mat4x4) <<8 +(math::#type_Vec4) <<16)
+      math::Mat4x4_mul_Vec4(res, m1, m2)
+CompilerCase ((math::#type_Vec2) +(math::#type_Vec2) <<8 +(math::#type_Mat2x2) <<16); vec mat
+      math::Vec2_mul_Mat2x2(res, m1, m2)
+CompilerCase ((math::#type_Vec2) +(math::#type_Vec3) <<8 +(math::#type_Mat2x3) <<16)
+      math::Vec3_mul_Mat2x3(res, m1, m2)
+CompilerCase ((math::#type_Vec2) +(math::#type_Vec4) <<8 +(math::#type_Mat2x4) <<16)
+      math::Vec4_mul_Mat2x4(res, m1, m2)
+CompilerCase ((math::#type_Vec3) +(math::#type_Vec2) <<8 +(math::#type_Mat3x2) <<16)
+      math::Vec2_mul_Mat3x2(res, m1, m2)
+CompilerCase ((math::#type_Vec3) +(math::#type_Vec3) <<8 +(math::#type_Mat3x3) <<16)
+      math::Vec3_mul_Mat3x3(res, m1, m2)
+CompilerCase ((math::#type_Vec3) +(math::#type_Vec4) <<8 +(math::#type_Mat3x4) <<16)
+      math::Vec4_mul_Mat3x4(res, m1, m2)
+CompilerCase ((math::#type_Vec4) +(math::#type_Vec2) <<8 +(math::#type_Mat4x2) <<16)
+      math::Vec2_mul_Mat4x2(res, m1, m2)
+CompilerCase ((math::#type_Vec4) +(math::#type_Vec3) <<8 +(math::#type_Mat4x3) <<16)
+      math::Vec3_mul_Mat4x3(res, m1, m2)
+CompilerCase ((math::#type_Vec4) +(math::#type_Vec4) <<8 +(math::#type_Mat4x4) <<16)
+      math::Vec4_mul_Mat4x4(res, m1, m2)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x2) <<8 +(math::#type_Mat2x2) <<16);mat mat
+      math::Mat2x2_mul(res, m1, m2)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat2x2) <<8 +(math::#type_Mat3x2) <<16)
+      math::Mat2x2_mul_Mat3x2(res, m1, m2)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat2x2) <<8 +(math::#type_Mat4x2) <<16)
+      math::Mat2x2_mul_Mat4x2(res, m1, m2)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat2x3) <<8 +(math::#type_Mat2x2) <<16)
+      math::Mat2x3_mul_Mat2x2(res, m1, m2)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat2x3) <<8 +(math::#type_Mat3x2) <<16)
+      math::Mat2x3_mul_Mat3x2(res, m1, m2)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat2x3) <<8 +(math::#type_Mat4x2) <<16)
+      math::Mat2x3_mul_Mat4x2(res, m1, m2)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat2x4) <<8 +(math::#type_Mat2x2) <<16)
+      math::Mat2x4_mul_Mat2x2(res, m1, m2)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat2x4) <<8 +(math::#type_Mat3x2) <<16)
+      math::Mat2x4_mul_Mat3x2(res, m1, m2)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat2x4) <<8 +(math::#type_Mat4x2) <<16)
+      math::Mat2x4_mul_Mat4x2(res, m1, m2)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat3x2) <<8 +(math::#type_Mat2x3) <<16)
+      math::Mat3x2_mul_Mat2x3(res, m1, m2)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat3x2) <<8 +(math::#type_Mat3x3) <<16)
+      math::Mat3x2_mul_Mat3x3(res, m1, m2)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat3x2) <<8 +(math::#type_Mat4x3) <<16)
+      math::Mat3x2_mul_Mat4x3(res, m1, m2)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat3x3) <<8 +(math::#type_Mat2x3) <<16)
+      math::Mat3x3_mul_Mat2x3(res, m1, m2)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x3) <<8 +(math::#type_Mat3x3) <<16)
+      math::Mat3x3_mul(res, m1, m2)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat3x3) <<8 +(math::#type_Mat4x3) <<16)
+      math::Mat3x3_mul_Mat4x3(res, m1, m2)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat3x4) <<8 +(math::#type_Mat2x3) <<16)
+      math::Mat3x4_mul_Mat2x3(res, m1, m2)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat3x4) <<8 +(math::#type_Mat3x3) <<16)
+      math::Mat3x4_mul_Mat3x3(res, m1, m2)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat3x4) <<8 +(math::#type_Mat4x3) <<16)
+      math::Mat3x4_mul_Mat4x3(res, m1, m2)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat4x2) <<8 +(math::#type_Mat2x4) <<16)
+      math::Mat4x2_mul_Mat2x4(res, m1, m2)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat4x2) <<8 +(math::#type_Mat3x4) <<16)
+      math::Mat4x2_mul_Mat3x4(res, m1, m2)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat4x2) <<8 +(math::#type_Mat4x4) <<16)
+      math::Mat4x2_mul_Mat4x4(res, m1, m2)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat4x3) <<8 +(math::#type_Mat2x4) <<16)
+      math::Mat4x3_mul_Mat2x4(res, m1, m2)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat4x3) <<8 +(math::#type_Mat3x4) <<16)
+      math::Mat4x3_mul_Mat3x4(res, m1, m2)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat4x3) <<8 +(math::#type_Mat4x4) <<16)
+      math::Mat4x3_mul_Mat4x4(res, m1, m2)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat4x4) <<8 +(math::#type_Mat2x4) <<16)
+      math::Mat4x4_mul_Mat2x4(res, m1, m2)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat4x4) <<8 +(math::#type_Mat3x4) <<16)
+      math::Mat4x4_mul_Mat3x4(res, m1, m2)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x4) <<8 +(math::#type_Mat4x4) <<16)
+      math::Mat4x4_mul(res, m1, m2)
+    CompilerDefault
+      CompilerError "[mul] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro sub(res, m1, m2)
+CompilerIf(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m1\__type0__)&1)<<0) +((TypeOf(m1\__type1__)&1)<<1) +((TypeOf(m1\__type2__)&1)<<2) +((TypeOf(m1\__type3__)&1)<<3)) Or(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3)) <>(((TypeOf(m2\__type0__)&1)<<0) +((TypeOf(m2\__type1__)&1)<<1) +((TypeOf(m2\__type2__)&1)<<2) + ((TypeOf(m2\__type3__)&1)<<3))
+CompilerError "Types must be the same!"
+CompilerEndIf
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::quat_sub(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::vec2_sub(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::vec3_sub(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::vec4_sub(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::Mat2x2_sub(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::Mat2x3_sub(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::Mat2x4_sub(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::Mat3x2_sub(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::Mat3x3_sub(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::Mat3x4_sub(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::Mat4x2_sub(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::Mat4x3_sub(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::Mat4x4_sub(res, m1, m2)
+    CompilerDefault
+      CompilerError "[sub] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro set_float(res, f0=0.0,f1=,f2=,f3=,f4=,f5=,f6=,f7=,f8=,f9=,f10=,f11=,f12=,f13=,f14=,f15=)
+CompilerIf (_math::dq#f1#_math::dq = "");set Scalar
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+      CompilerCase math::#type_quat
+        math::quat_set_Scalar(res, f0)
+      CompilerCase math::#type_vec2
+        math::vec2_set_Scalar(res, f0)
+      CompilerCase math::#type_vec3
+        math::vec3_set_Scalar(res, f0)
+      CompilerCase math::#type_vec4
+        math::vec4_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat2x2
+        math::Mat2x2_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat2x3
+        math::Mat2x3_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat2x4
+        math::Mat2x4_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat3x2
+        math::Mat3x2_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat3x3
+        math::Mat3x3_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat3x4
+        math::Mat3x4_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat4x2
+        math::Mat4x2_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat4x3
+        math::Mat4x3_set_Scalar(res, f0)
+      CompilerCase math::#type_Mat4x4
+        math::Mat4x4_set_Scalar(res, f0)
+      CompilerDefault
+        CompilerError "[set_float] unsupported type"
+    CompilerEndSelect
+  CompilerElse
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+      CompilerCase math::#type_quat
+        math::quat_set_float(res, f0, f1, f2, f3)
+      CompilerCase math::#type_vec2
+        math::vec2_set_float(res, f0, f1)
+      CompilerCase math::#type_vec3
+        math::vec3_set_float(res, f0, f1, f2)
+      CompilerCase math::#type_vec4
+        math::vec4_set_float(res, f0, f1, f2, f3)
+      CompilerCase math::#type_Mat2x2
+        math::Mat2x2_set_float(res, f0, f1, f2, f3)
+      CompilerCase math::#type_Mat2x3
+        math::Mat2x3_set_float(res, f0, f1, f2, f3, f4, f5)
+      CompilerCase math::#type_Mat2x4
+        math::Mat2x4_set_float(res, f0, f1, f2, f3, f4, f5, f6, f7)
+      CompilerCase math::#type_Mat3x2
+        math::Mat3x2_set_float(res, f0, f1, f2, f3, f4, f5)
+      CompilerCase math::#type_Mat3x3
+        math::Mat3x3_set_float(res, f0, f1, f2, f3, f4, f5, f6, f7, f8)
+      CompilerCase math::#type_Mat3x4
+        math::Mat3x4_set_float(res, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11)
+      CompilerCase math::#type_Mat4x2
+        math::Mat4x2_set_float(res, f0, f1, f2, f3, f4, f5, f6, f7)
+      CompilerCase math::#type_Mat4x3
+        math::Mat4x3_set_float(res, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11)
+      CompilerCase math::#type_Mat4x4
+        math::Mat4x4_set_float(res, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15)
+      CompilerDefault
+        CompilerError "[set_float] unsupported type"
+    CompilerEndSelect
+  CompilerEndIf
+EndMacro
+Macro set(res, m, v1=, v2=, v3=)
+CompilerSelect(((((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3))) +((((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3)))<<8)
+CompilerCase ((math::#type_quat) +(math::#type_quat) <<8);quat
+      math::quat_set(res, m)
+CompilerCase ((math::#type_quat) +(math::#type_vec3) <<8)
+      CompilerIf _math::dq#v1#_math::dq = ""
+        math::quat_set_eulerAngle(res, m)
+      CompilerElse
+        math::quat_set_vec3_vec3(res, m, v1)
+      CompilerEndIf      
+CompilerCase ((math::#type_quat) +(math::#type_mat3x3) <<8)
+      math::quat_set_mat3x3(res, m)
+CompilerCase ((math::#type_quat) +(math::#type_mat4x4) <<8)
+      math::quat_set_mat4x4(res, m)
+CompilerCase ((math::#type_mat3x3) +(math::#type_quat) <<8)
+      math::mat3x3_set_quat(res, m)
+CompilerCase ((math::#type_mat4x4) +(math::#type_quat) <<8)
+      math::mat4x4_set_quat(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_vec2) <<8);mat vec
+      math::Mat2x2_set_Vec2(res, m, v1)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_vec3) <<8)
+      math::Mat2x3_set_Vec3(res, m, v1)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_vec4) <<8)
+      math::Mat2x4_set_Vec4(res, m, v1)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_vec2) <<8)
+      math::Mat3x2_set_Vec2(res, m, v1, v2)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_vec3) <<8)
+      math::Mat3x3_set_Vec3(res, m, v1, v2)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_vec4) <<8)
+      math::Mat3x4_set_Vec4(res, m, v1, v2)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_vec2) <<8)
+      math::Mat4x2_set_Vec2(res, m, v1, v2, v3)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_vec3) <<8)
+      math::Mat4x3_set_Vec3(res, m, v1, v2, v3)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_vec4) <<8)
+      math::Mat4x4_set_Vec4(res, m, v1, v2, v3)
+CompilerCase ((math::#type_vec2) +(math::#type_vec2) <<8);vec vec
+      math::vec2_set(res, m)
+CompilerCase ((math::#type_vec2) +(math::#type_vec3) <<8)
+      math::vec2_set(res, m)
+CompilerCase ((math::#type_vec2) +(math::#type_vec4) <<8)
+      math::vec2_set(res, m)
+CompilerCase ((math::#type_vec3) +(math::#type_vec2) <<8);vec vec
+      math::vec3_set_vec2(res, m, 0)
+CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8)
+      math::vec3_set(res, m)
+CompilerCase ((math::#type_vec3) +(math::#type_vec4) <<8)
+      math::vec3_set_vec4(res, m)
+CompilerCase ((math::#type_vec4) +(math::#type_vec3) <<8);vec vec
+      math::vec4_set_vec3(res, m, 0)
+CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8)
+      math::vec4_set(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x2) <<8);mat mat
+      math::Mat2x2_set(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x3) <<8)
+      math::Mat2x2_set_Mat2x3(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x4) <<8)
+      math::Mat2x2_set_Mat2x4(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat3x2) <<8)
+      math::Mat2x2_set_Mat3x2(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat3x3) <<8)
+      math::Mat2x2_set_Mat3x3(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat3x4) <<8)
+      math::Mat2x2_set_Mat3x4(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat4x2) <<8)
+      math::Mat2x2_set_Mat4x2(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat4x3) <<8)
+      math::Mat2x2_set_Mat4x3(res, m)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat4x4) <<8)
+      math::Mat2x2_set_Mat4x4(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat2x2) <<8)
+      math::Mat2x3_set_Mat2x2(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat2x3) <<8)
+      math::Mat2x3_set(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat2x4) <<8)
+      math::Mat2x3_set_Mat2x4(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat3x2) <<8)
+      math::Mat2x3_set_Mat3x2(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat3x3) <<8)
+      math::Mat2x3_set_Mat3x3(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat3x4) <<8)
+      math::Mat2x3_set_Mat3x4(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat4x2) <<8)
+      math::Mat2x3_set_Mat4x2(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat4x3) <<8)
+      math::Mat2x3_set_Mat4x3(res, m)
+CompilerCase ((math::#type_Mat2x3) +(math::#type_Mat4x4) <<8)
+      math::Mat2x3_set_Mat4x4(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat2x2) <<8)
+      math::Mat2x4_set_Mat2x2(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat2x3) <<8)
+      math::Mat2x4_set_Mat2x3(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat2x4) <<8)
+      math::Mat2x4_set(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat3x2) <<8)
+      math::Mat2x4_set_Mat3x2(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat3x3) <<8)
+      math::Mat2x4_set_Mat3x3(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat3x4) <<8)
+      math::Mat2x4_set_Mat3x4(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat4x2) <<8)
+      math::Mat2x4_set_Mat4x2(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat4x3) <<8)
+      math::Mat2x4_set_Mat4x3(res, m)
+CompilerCase ((math::#type_Mat2x4) +(math::#type_Mat4x4) <<8)
+      math::Mat2x4_set_Mat4x4(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat2x2) <<8)
+      math::Mat3x2_set_Mat2x2(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat2x3) <<8)
+      math::Mat3x2_set_Mat2x3(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat2x4) <<8)
+      math::Mat3x2_set_Mat2x4(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat3x2) <<8)
+      math::Mat3x2_set(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat3x3) <<8)
+      math::Mat3x2_set_Mat3x3(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat3x4) <<8)
+      math::Mat3x2_set_Mat3x4(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat4x2) <<8)
+      math::Mat3x2_set_Mat4x2(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat4x3) <<8)
+      math::Mat3x2_set_Mat4x3(res, m)
+CompilerCase ((math::#type_Mat3x2) +(math::#type_Mat4x4) <<8)
+      math::Mat3x2_set_Mat4x4(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat2x2) <<8)
+      math::Mat3x3_set_Mat2x2(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat2x3) <<8)
+      math::Mat3x3_set_Mat2x3(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat2x4) <<8)
+      math::Mat3x3_set_Mat2x4(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x2) <<8)
+      math::Mat3x3_set_Mat3x2(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x3) <<8)
+      math::Mat3x3_set(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x4) <<8)
+      math::Mat3x3_set_Mat3x4(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat4x2) <<8)
+      math::Mat3x3_set_Mat4x2(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat4x3) <<8)
+      math::Mat3x3_set_Mat4x3(res, m)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat4x4) <<8)
+      math::Mat3x3_set_Mat4x4(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat2x2) <<8)
+      math::Mat3x4_set_Mat2x2(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat2x3) <<8)
+      math::Mat3x4_set_Mat2x3(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat2x4) <<8)
+      math::Mat3x4_set_Mat2x4(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat3x2) <<8)
+      math::Mat3x4_set_Mat3x2(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat3x3) <<8)
+      math::Mat3x4_set_Mat3x3(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat3x4) <<8)
+      math::Mat3x4_set(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat4x2) <<8)
+      math::Mat3x4_set_Mat4x2(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat4x3) <<8)
+      math::Mat3x4_set_Mat4x3(res, m)
+CompilerCase ((math::#type_Mat3x4) +(math::#type_Mat4x4) <<8)
+      math::Mat3x4_set_Mat4x4(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat2x2) <<8)
+      math::Mat4x2_set_Mat2x2(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat2x3) <<8)
+      math::Mat4x2_set_Mat2x3(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat2x4) <<8)
+      math::Mat4x2_set_Mat2x4(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat3x2) <<8)
+      math::Mat4x2_set_Mat3x2(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat3x3) <<8)
+      math::Mat4x2_set_Mat3x3(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat3x4) <<8)
+      math::Mat4x2_set_Mat3x4(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat4x2) <<8)
+      math::Mat4x2_set(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat4x3) <<8)
+      math::Mat4x2_set_Mat4x3(res, m)
+CompilerCase ((math::#type_Mat4x2) +(math::#type_Mat4x4) <<8)
+      math::Mat4x2_set_Mat4x4(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat2x2) <<8)
+      math::Mat4x3_set_Mat2x2(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat2x3) <<8)
+      math::Mat4x3_set_Mat2x3(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat2x4) <<8)
+      math::Mat4x3_set_Mat2x4(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat3x2) <<8)
+      math::Mat4x3_set_Mat3x2(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat3x3) <<8)
+      math::Mat4x3_set_Mat3x3(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat3x4) <<8)
+      math::Mat4x3_set_Mat3x4(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat4x2) <<8)
+      math::Mat4x3_set_Mat4x2(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat4x3) <<8)
+      math::Mat4x3_set(res, m)
+CompilerCase ((math::#type_Mat4x3) +(math::#type_Mat4x4) <<8)
+      math::Mat4x3_set_Mat4x4(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat2x2) <<8)
+      math::Mat4x4_set_Mat2x2(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat2x3) <<8)
+      math::Mat4x4_set_Mat2x3(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat2x4) <<8)
+      math::Mat4x4_set_Mat2x4(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat3x2) <<8)
+      math::Mat4x4_set_Mat3x2(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat3x3) <<8)
+      math::Mat4x4_set_Mat3x3(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat3x4) <<8)
+      math::Mat4x4_set_Mat3x4(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x2) <<8)
+      math::Mat4x4_set_Mat4x2(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x3) <<8)
+      math::Mat4x4_set_Mat4x3(res, m)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x4) <<8)
+      math::Mat4x4_set(res, m)
+    CompilerDefault
+      CompilerError "[set] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro div(res, m1, m2)
+CompilerSelect(((((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3))) +((((TypeOf(m1\__type0__)&1)<<0) +((TypeOf(m1\__type1__)&1)<<1) +((TypeOf(m1\__type2__)&1)<<2) +((TypeOf(m1\__type3__)&1)<<3))) <<8 +((((TypeOf(m2\__type0__)&1)<<0) +((TypeOf(m2\__type1__)&1)<<1) +((TypeOf(m2\__type2__)&1)<<2) + ((TypeOf(m2\__type3__)&1)<<3)))<<16)
+CompilerCase ((math::#type_vec2) +(math::#type_Mat2x2) <<8 +(math::#type_vec2) <<16); mat vec
+      math::Mat2x2_div_Vec2(res, m1, m2)
+CompilerCase ((math::#type_vec3) +(math::#type_Mat3x3) <<8 +(math::#type_vec3) <<16)
+      math::Mat3x3_div_Vec3(res, m1, m2)
+CompilerCase ((math::#type_vec4) +(math::#type_Mat4x4) <<8 +(math::#type_vec4) <<16)
+      math::Mat4x4_div_Vec4(res, m1, m2)
+    CompilerDefault
+CompilerCase ((math::#type_vec2) +(math::#type_vec2) <<8 +(math::#type_Mat2x2) <<16); mat/vec
+      math::Vec2_div_Mat2x2(res, m1, m2)
+CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8 +(math::#type_Mat3x3) <<16)
+      math::Vec3_div_Mat3x3(res, m1, m2)
+CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8 +(math::#type_Mat4x4) <<16)
+      math::Vec4_div_Mat4x4(res, m1, m2)
+CompilerCase ((math::#type_vec2) +(math::#type_vec2) <<8 +(math::#type_vec2) <<16); vec
+      math::vec2_div(res, m1, m2)
+CompilerCase ((math::#type_vec3) +(math::#type_vec3) <<8 +(math::#type_vec3) <<16)
+      math::vec3_div(res, m1, m2)
+CompilerCase ((math::#type_vec4) +(math::#type_vec4) <<8 +(math::#type_vec4) <<16)
+      math::vec4_div(res, m1, m2)
+CompilerCase ((math::#type_Mat2x2) +(math::#type_Mat2x2) <<8 +(math::#type_Mat2x2) <<16); mat
+      math::Mat2x2_div(res, m1, m2)
+CompilerCase ((math::#type_Mat3x3) +(math::#type_Mat3x3) <<8 +(math::#type_Mat3x3) <<16)
+      math::Mat3x3_div(res, m1, m2)
+CompilerCase ((math::#type_Mat4x4) +(math::#type_Mat4x4) <<8 +(math::#type_Mat4x4) <<16)
+      math::Mat4x4_div(res, m1, m2)
+    CompilerDefault
+      CompilerError "[div] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro inverse(res, m)  
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::quat_inverse(res, M)
+    CompilerCase math::#type_Mat2x2
+      math::Mat2x2_inverse(res, m)       
+    CompilerCase math::#type_Mat3x3
+      math::Mat3x3_inverse(res, m)       
+    CompilerCase math::#type_Mat4x4
+      math::Mat4x4_inverse(res, m)       
+    CompilerDefault
+      Debug "[inverse] Not supported type"
+  CompilerEndSelect  
+EndMacro
+Macro transpose(res, m)  
+CompilerSelect(((((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) +((TypeOf(res\__type3__)&1)<<3))) +((((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3)))<<8)
+CompilerCase ((math::#type_mat2x2) +(math::#type_mat2x2) <<8)
+      math::mat2x2_transpose(res, m)
+CompilerCase ((math::#type_mat2x3) +(math::#type_mat3x2) <<8)
+      math::mat2x3_transpose(res, m)      
+CompilerCase ((math::#type_mat2x4) +(math::#type_mat4x2) <<8)
+      math::mat2x4_transpose(res, m)
+CompilerCase ((math::#type_mat3x2) +(math::#type_mat2x3) <<8)
+      math::mat3x2_transpose(res, m)
+CompilerCase ((math::#type_mat3x3) +(math::#type_mat3x3) <<8)
+      math::mat3x3_transpose(res, m)
+CompilerCase ((math::#type_mat3x4) +(math::#type_mat4x3) <<8)
+      math::mat3x4_transpose(res, m)
+CompilerCase ((math::#type_mat4x2) +(math::#type_mat2x4) <<8)
+      math::mat4x2_transpose(res, m)
+CompilerCase ((math::#type_mat4x3) +(math::#type_mat3x4) <<8)
+      math::mat4x3_transpose(res, m)
+CompilerCase ((math::#type_mat4x4) +(math::#type_mat4x4) <<8)
+      math::mat4x4_transpose(res, m)
+    CompilerDefault
+      CompilerError "[transpose] Not supported mat"
+  CompilerEndSelect  
+EndMacro
+Macro determinant(m)
+_math::compute_determinant(m,(((TypeOf(m\__type0__)&1)<<0) +((TypeOf(m\__type1__)&1)<<1) +((TypeOf(m\__type2__)&1)<<2) + ((TypeOf(m\__type3__)&1)<<3)))
+EndMacro
+Macro dot(a, b)
+_math::compute_Dot(a,(((TypeOf(a\__type0__)&1)<<0) +((TypeOf(a\__type1__)&1)<<1) +((TypeOf(a\__type2__)&1)<<2) + ((TypeOf(a\__type3__)&1)<<3)), b)
+EndMacro
+Macro length(a)
+Sqr(_math::compute_Dot(a,(((TypeOf(a\__type0__)&1)<<0) +((TypeOf(a\__type1__)&1)<<1) +((TypeOf(a\__type2__)&1)<<2) + ((TypeOf(a\__type3__)&1)<<3)), a))
+EndMacro
+Macro length2(a)
+_math::compute_Dot(a,(((TypeOf(a\__type0__)&1)<<0) +((TypeOf(a\__type1__)&1)<<1) +((TypeOf(a\__type2__)&1)<<2) + ((TypeOf(a\__type3__)&1)<<3)), a)
+EndMacro
+Macro normalize(res, v)
+_math::compute_normalize(res,(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3)), v)
+EndMacro
+Macro orientate3(resMat3x3, angleFloatOrVec3)
+  CompilerIf TypeOf(angleFloatOrVec3) <> #PB_Structure
+    math::orientate3_float(resMat3x3, angleFloatOrVec3)
+  CompilerElse
+    math::orientate3_vec3(resMat3x3, angleFloatOrVec3)
+  CompilerEndIf
+EndMacro
+Macro add_scalar(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::quat_add_scalar(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::vec2_add_scalar(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::vec3_add_scalar(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::vec4_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::Mat2x2_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::Mat2x3_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::Mat2x4_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::Mat3x2_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::Mat3x3_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::Mat3x4_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::Mat4x2_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::Mat4x3_add_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::Mat4x4_add_scalar(res, m1, m2)
+    CompilerDefault
+      CompilerError "[add_scalar] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro sub_scalar(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::quat_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::vec2_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::vec3_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::vec4_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::Mat2x2_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::Mat2x3_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::Mat2x4_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::Mat3x2_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::Mat3x3_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::Mat3x4_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::Mat4x2_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::Mat4x3_sub_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::Mat4x4_sub_scalar(res, m1, m2)
+    CompilerDefault
+      CompilerError "[sub_scalar] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro mul_scalar(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::quat_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::vec2_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::vec3_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::vec4_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::Mat2x2_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::Mat2x3_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::Mat2x4_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::Mat3x2_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::Mat3x3_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::Mat3x4_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::Mat4x2_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::Mat4x3_mul_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::Mat4x4_mul_scalar(res, m1, m2)
+    CompilerDefault
+      CompilerError "[mul_scalar] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro div_scalar(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::quat_div_scalar(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::vec2_div_scalar(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::vec3_div_scalar(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::vec4_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::Mat2x2_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::Mat2x3_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::Mat2x4_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::Mat3x2_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::Mat3x3_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::Mat3x4_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::Mat4x2_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::Mat4x3_div_scalar(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::Mat4x4_div_scalar(res, m1, m2)
+    CompilerDefault
+      CompilerError "[add_scalar] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro scalar_add(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::scalar_add_quat(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::scalar_add_vec2(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::scalar_add_vec3(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::scalar_add_vec4(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::scalar_add_Mat2x2(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::scalar_add_Mat2x3(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::scalar_add_Mat2x4(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::scalar_add_Mat3x2(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::scalar_add_Mat3x3(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::scalar_add_Mat3x4(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::scalar_add_Mat4x2(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::scalar_add_Mat4x3(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::scalar_add_Mat4x4(res, m1, m2)
+    CompilerDefault
+      CompilerError "[scalar_add] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro scalar_sub(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::scalar_sub_quat(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::scalar_sub_vec2(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::scalar_sub_vec3(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::scalar_sub_vec4(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::scalar_sub_Mat2x2(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::scalar_sub_Mat2x3(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::scalar_sub_Mat2x4(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::scalar_sub_Mat3x2(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::scalar_sub_Mat3x3(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::scalar_sub_Mat3x4(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::scalar_sub_Mat4x2(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::scalar_sub_Mat4x3(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::scalar_sub_Mat4x4(res, m1, m2)
+    CompilerDefault
+      CompilerError "[scalar_sub] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro scalar_mul(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::scalar_mul_quat(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::scalar_mul_vec2(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::scalar_mul_vec3(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::scalar_mul_vec4(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::scalar_mul_Mat2x2(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::scalar_mul_Mat2x3(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::scalar_mul_Mat2x4(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::scalar_mul_Mat3x2(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::scalar_mul_Mat3x3(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::scalar_mul_Mat3x4(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::scalar_mul_Mat4x2(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::scalar_mul_Mat4x3(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::scalar_mul_Mat4x4(res, m1, m2)
+    CompilerDefault
+      CompilerError "[scalar_mul] unsupported type"
+  CompilerEndSelect
+EndMacro
+Macro scalar_div(res, m1, m2)
+CompilerSelect(((TypeOf(res\__type0__)&1)<<0) +((TypeOf(res\__type1__)&1)<<1) +((TypeOf(res\__type2__)&1)<<2) + ((TypeOf(res\__type3__)&1)<<3))
+    CompilerCase math::#type_quat
+      math::scalar_div_quat(res, m1, m2)
+    CompilerCase math::#type_vec2
+      math::scalar_div_vec2(res, m1, m2)
+    CompilerCase math::#type_vec3
+      math::scalar_div_vec3(res, m1, m2)
+    CompilerCase math::#type_vec4
+      math::scalar_div_vec4(res, m1, m2)
+    CompilerCase math::#type_Mat2x2
+      math::scalar_div_Mat2x2(res, m1, m2)
+    CompilerCase math::#type_Mat2x3
+      math::scalar_div_Mat2x3(res, m1, m2)
+    CompilerCase math::#type_Mat2x4
+      math::scalar_div_Mat2x4(res, m1, m2)
+    CompilerCase math::#type_Mat3x2
+      math::scalar_div_Mat3x2(res, m1, m2)
+    CompilerCase math::#type_Mat3x3
+      math::scalar_div_Mat3x3(res, m1, m2)
+    CompilerCase math::#type_Mat3x4
+      math::scalar_div_Mat3x4(res, m1, m2)
+    CompilerCase math::#type_Mat4x2
+      math::scalar_div_Mat4x2(res, m1, m2)
+    CompilerCase math::#type_Mat4x3
+      math::scalar_div_Mat4x3(res, m1, m2)
+    CompilerCase math::#type_Mat4x4
+      math::scalar_div_Mat4x4(res, m1, m2)
+    CompilerDefault
+      CompilerError "[scalar_div] unsupported type"
+  CompilerEndSelect
+EndMacro
+;}
+;-----------------------
+;- in.pbi
+;{
+
+Macro in_Vec2()
+  _math::in_mem("vec2 "+ MacroExpandedCount, SizeOf(math::vec2))
+EndMacro
+Macro in_Vec3()
+  _math::in_mem("vec3 "+ MacroExpandedCount, SizeOf(math::vec3))
+EndMacro
+Macro in_Vec4()
+  _math::in_mem("vec4 "+ MacroExpandedCount, SizeOf(math::vec4))
+EndMacro
+Macro in_Mat2x2()
+  _math::in_mem("mat2x2 "+ MacroExpandedCount, SizeOf(math::Mat2x2))
+EndMacro
+Macro in_Mat3x3()
+  _math::in_mem("mat3x3 "+ MacroExpandedCount, SizeOf(math::Mat3x3))
+EndMacro
+Macro in_Mat4x4()
+  _math::in_mem("mat4x4 "+ MacroExpandedCount, SizeOf(math::Mat4x4))
+EndMacro
+;}
+  Global.vec4 V4_0000,V4_0001,V4_0010,V4_0011,V4_0100,V4_0101,V4_0110,V4_0111
+  Global.vec4 V4_1000,V4_1001,V4_1010,V4_1011,V4_1100,V4_1101,V4_1110,V4_1111
+  Global.vec3 V3_000,V3_100,V3_010,V3_001,V3_110,V3_101,V3_011,V3_111
+  Global.vec2 V2_00,V2_10,V2_01,V2_11
+  Global.mat4x4 M4_1
+  Global.mat3x3 M3_1
+  Global.Mat2x2 M2_1
+  Global.quat Q_1
+  Global.f one
 EndDeclareModule
 XIncludeFile "_module__math_.pbi"
 XIncludeFile "_declare__math.pbi"

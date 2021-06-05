@@ -71,12 +71,10 @@ Declare compute_outerProduct(*res.float, resType.l, *c.math::vec4, *r.math::vec4
 Declare.f compute_determinant(*res, resType.l)
 ;}
 ;-----------------------
-;- _quatemion.pbi
+;- _in.pbi
 ;{
 
-Declare.f _Roll(*q.math::quat)
-Declare.f _Pitch(*q.math::quat)
-Declare.f _Yaw(*q.math::quat)
+Declare in_mem(name.s, size.i)
 ;}
   CompilerIf #PB_Compiler_Debugger
     Macro assert(exp)

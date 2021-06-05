@@ -39,6 +39,8 @@ EndProcedure
 NewList folder.s()
 NewList dll.s()
 
+SetCurrentDirectory( #PB_Compiler_FilePath )
+
 Define dir=ExamineDirectory(#PB_Any, "./","*.*")
 If dir
   While NextDirectoryEntry(dir)
@@ -92,45 +94,47 @@ ForEach folder()
 Next
 
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-  BreakPrint("")
-  BreakPrint("The include-files needs some DLLs to work. Windows will search this dll in the directory of the executeable, the current directory or " +
-             "in the %PATH% enviroment variable. The pure basic ide set the %path% variabel to")
-  BreakPrint("")
-  BreakPrint("")
-  PrintN("     "+ #PB_Compiler_Home + "Compilers")
-  BreakPrint("")
-  BreakPrint("This script can copy all the dlls to this directory and " + #DQUOTE$ + "Compile/Run" + #DQUOTE$ +" will work without extra manual copies of the dlls.")
-  BreakPrint("")
-  BreakPrint("")
-  Print("Copy all DLLs to "+#PB_Compiler_Home + "Compilers"+" ? [Y/N] ")
-  
-  Key = GetKey()
-  
-  If key="y" Or key="Y" Or key="j" Or key="J"
-    PrintN("Yes")
-    ForEach dll()
-      Print("  "+dll())
-      If CopyFile( dll(), #PB_Compiler_Home + "Compilers/" + dll() )
-        PrintN(" done")
-      Else
-        PrintN(" FAIL")
-      EndIf
-    Next
-  Else
-    PrintN("No")
+  If ListSize(dll()) > 0
+    BreakPrint("")
+    BreakPrint("The include-files needs some DLLs to work. Windows will search this dll in the directory of the executeable, the current directory or " +
+               "in the %PATH% enviroment variable. The pure basic ide set the %path% variabel to")
+    BreakPrint("")
+    BreakPrint("")
+    PrintN("     "+ #PB_Compiler_Home + "Compilers")
+    BreakPrint("")
+    BreakPrint("This script can copy all the dlls to this directory and " + #DQUOTE$ + "Compile/Run" + #DQUOTE$ +" will work without extra manual copies of the dlls.")
+    BreakPrint("")
+    BreakPrint("")
+    Print("Copy all DLLs to "+#PB_Compiler_Home + "Compilers"+" ? [Y/N] ")
+    
+    Key = GetKey()
+    
+    If key="y" Or key="Y" Or key="j" Or key="J"
+      PrintN("Yes")
+      ForEach dll()
+        Print("  "+dll())
+        If CopyFile( dll(), #PB_Compiler_Home + "Compilers/" + dll() )
+          PrintN(" done")
+        Else
+          PrintN(" FAIL")
+        EndIf
+      Next
+    Else
+      PrintN("No")
+    EndIf
   EndIf
 CompilerEndIf
 
 BreakPrint("")
-BreakPrint("Press [return] to quit.")
-Input()
+BreakPrint("Press [any] to quit.")
+key = GetKey()
 
 CloseConsole()
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; ExecutableFormat = Console
-; CursorPosition = 96
-; FirstLine = 71
+; CursorPosition = 35
+; FirstLine = 19
 ; Folding = -
 ; EnableXP
 ; EnableAdmin
-; DisableDebugger
+; Debugger = IDE

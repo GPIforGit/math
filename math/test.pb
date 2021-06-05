@@ -1,7 +1,7 @@
-﻿XIncludeFile "math.pbi"
+﻿;XIncludeFile "math.pbi"
+XIncludeFile "..\..\math\math.pbi"
 
-;XIncludeFile "..\..\math\math.pbi"
-
+;XIncludeFile #PB_Compiler_Home + "Include/math/math.pbi"
 
 EnableExplicit
 Define.l sum, err
@@ -22,62 +22,62 @@ Procedure.l  Test_Vec2_operators()
   math::set_float(a, 1.0, 2.0, 3.0, 4.0)
   math::set_float(b, 4.0, 5.0, 6.0, 7.0)
   
-  math::let(  C, A, +, b)
+  math::add(  C, A, b)
   math::set_float(res, 5,7,9,11)
   math::equal(Bool, C, Res)
   error + 1- math::all(bool)
   
-  math::let(  D, B, -, A)
+  math::sub(  D, B, A)
   math::set_float(res, 3,3,3,3)
   math::equal(Bool, D, Res)
   error + 1-math::all(bool)
   
-  math::let(  E, A, *, b)
+  math::mul(  E, A, b)
   math::set_float(res, 4,10,18,28)
   math::equal(Bool, E, Res)
   error + 1-math::all(bool)
   
-  math::let(  f, B, /, A)
+  math::div(  f, B, A)
   math::set_float(res, 4, 2.5, 2, 7/4)
   math::equal(Bool, F, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar(  g, a, +, 1.0)
+  math::add_scalar(  g, a, 1.0)
   math::set_float(res, 2, 3, 4, 5)
   math::equal(Bool, g, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar(  h, B, -, 1.0)
+  math::sub_scalar(  h, B, 1.0)
   math::set_float(res, 3, 4, 5, 6)
   math::equal(Bool, h, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar( i, a, *, 2.0)
+  math::mul_scalar( i, a, 2.0)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, i, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar( j, b, /, 2.0)
+  math::div_scalar( j, b, 2.0)
   math::set_float(res, 2, 2.5, 3, 3.5)
   math::equal(Bool, j, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( k, 1.0, +, a)
+  math::scalar_add( k, 1.0, a)
   math::set_float(res, 2,3,4,5)
   math::equal(Bool, k, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( l, 1.0, -, b)
+  math::scalar_sub( l, 1.0, b)
   math::set_float(res, -3,-4,-5,-6)
   math::equal(Bool, l, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( m, 2.0, *, a)
+  math::scalar_mul( m, 2.0, a)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, m, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( n, 2.0, /, b)
+  math::scalar_div( n, 2.0, b)
   math::set_float(res,0.5,2/5,2/6,2/7)
   math::equal(Bool, n, Res)
   error + 1-math::all(bool)
@@ -85,49 +85,49 @@ Procedure.l  Test_Vec2_operators()
   ; --------
   
   math::set(C,A)
-  math::let(C, C, +, b)
+  math::add(C, C, b)
   math::set_float(res, 5,7,9,11)
   math::equal(Bool, C, Res)
   error + 1- math::all(bool)
   
   math::set(D,B)
-  math::let(D, D, -, A)
+  math::sub(D, D, A)
   math::set_float(res, 3,3,3,3)
   math::equal(Bool, D, Res)
   error + 1-math::all(bool)
   
   math::set(E,A)
-  math::Let(E,  E, *, b)
+  math::mul(E,  E, b)
   math::set_float(res, 4,10,18,28)
   math::equal(Bool, E, Res)
   error + 1-math::all(bool)
   
   math::set(f,b)
-  math::Let(f,  f, /, A)
+  math::div(f,  f,  A)
   math::set_float(res, 4, 2.5, 2, 7/4)
   math::equal(Bool, F, Res)
   error + 1-math::all(bool)
   
   math::set(g,a)
-  math::let_scalar(g, g, +, 1.0)
+  math::add_scalar(g, g, 1.0)
   math::set_float(res, 2, 3, 4, 5)
   math::equal(Bool, g, Res)
   error + 1-math::all(bool)
   
   math::set(h,b)
-  math::let_scalar(h,  h, -, 1.0)
+  math::sub_scalar(h,  h,  1.0)
   math::set_float(res, 3, 4, 5, 6)
   math::equal(Bool, h, Res)
   error + 1-math::all(bool)
   
   math::set(i,a)
-  math::let_scalar(i, i, *, 2.0)
+  math::mul_scalar(i, i, 2.0)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, i, Res)
   error + 1-math::all(bool)
   
   math::set(j,b)
-  math::let_scalar(j, j, /, 2.0)
+  math::div_scalar(j, j, 2.0)
   math::set_float(res, 2, 2.5, 3, 3.5)
   math::equal(Bool, j, Res)
   error + 1-math::all(bool)
@@ -191,62 +191,62 @@ Procedure.l  Test_Vec3_operators()
   math::set_float(a, 1.0, 2.0, 3.0, 4.0)
   math::set_float(b, 4.0, 5.0, 6.0, 7.0)
   
-  math::let(  C, A, +, b)
+  math::add(  C, A, b)
   math::set_float(res, 5,7,9,11)
   math::equal(Bool, C, Res)
   error + 1- math::all(bool)
   
-  math::let(  D, B, -, A)
+  math::sub(  D, B, A)
   math::set_float(res, 3,3,3,3)
   math::equal(Bool, D, Res)
   error + 1-math::all(bool)
   
-  math::let(  E, A, *, b)
+  math::mul(  E, A, b)
   math::set_float(res, 4,10,18,28)
   math::equal(Bool, E, Res)
   error + 1-math::all(bool)
   
-  math::let(  f, B, /, A)
+  math::div(  f, B, A)
   math::set_float(res, 4, 2.5, 2, 7/4)
   math::equal(Bool, F, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar(  g, a, +, 1.0)
+  math::add_scalar(  g, a, 1.0)
   math::set_float(res, 2, 3, 4, 5)
   math::equal(Bool, g, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar(  h, B, -, 1.0)
+  math::sub_scalar(  h, B, 1.0)
   math::set_float(res, 3, 4, 5, 6)
   math::equal(Bool, h, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar( i, a, *, 2.0)
+  math::mul_scalar( i, a, 2.0)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, i, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar( j, b, /, 2.0)
+  math::div_scalar( j, b, 2.0)
   math::set_float(res, 2, 2.5, 3, 3.5)
   math::equal(Bool, j, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( k, 1.0, +, a)
+  math::scalar_add( k, 1.0, a)
   math::set_float(res, 2,3,4,5)
   math::equal(Bool, k, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( l, 1.0, -, b)
+  math::scalar_sub( l, 1.0, b)
   math::set_float(res, -3,-4,-5,-6)
   math::equal(Bool, l, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( m, 2.0, *, a)
+  math::scalar_mul( m, 2.0, a)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, m, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( n, 2.0, /, b)
+  math::scalar_div( n, 2.0, b)
   math::set_float(res,0.5,2/5,2/6,2/7)
   math::equal(Bool, n, Res)
   error + 1-math::all(bool)
@@ -254,49 +254,50 @@ Procedure.l  Test_Vec3_operators()
   ; --------
   
   math::set(C,A)
-  math::let(C, C, +, b)
+  math::add(C, C, b)
   math::set_float(res, 5,7,9,11)
   math::equal(Bool, C, Res)
   error + 1- math::all(bool)
+  Debug "m"+error
   
   math::set(D,B)
-  math::let(D, D, -, A)
+  math::sub(D, D, A)
   math::set_float(res, 3,3,3,3)
   math::equal(Bool, D, Res)
   error + 1-math::all(bool)
   
   math::set(E,A)
-  math::Let(E,  E, *, b)
+  math::mul(E,  E, b)
   math::set_float(res, 4,10,18,28)
   math::equal(Bool, E, Res)
   error + 1-math::all(bool)
   
   math::set(f,b)
-  math::Let(f,  f, /, A)
+  math::div(f,  f,  A)
   math::set_float(res, 4, 2.5, 2, 7/4)
   math::equal(Bool, F, Res)
   error + 1-math::all(bool)
   
   math::set(g,a)
-  math::let_scalar(g, g, +, 1.0)
+  math::add_scalar(g, g, 1.0)
   math::set_float(res, 2, 3, 4, 5)
   math::equal(Bool, g, Res)
   error + 1-math::all(bool)
   
   math::set(h,b)
-  math::let_scalar(h,  h, -, 1.0)
+  math::sub_scalar(h,  h,  1.0)
   math::set_float(res, 3, 4, 5, 6)
   math::equal(Bool, h, Res)
   error + 1-math::all(bool)
   
   math::set(i,a)
-  math::let_scalar(i, i, *, 2.0)
+  math::mul_scalar(i, i, 2.0)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, i, Res)
   error + 1-math::all(bool)
   
   math::set(j,b)
-  math::let_scalar(j, j, /, 2.0)
+  math::div_scalar(j, j, 2.0)
   math::set_float(res, 2, 2.5, 3, 3.5)
   math::equal(Bool, j, Res)
   error + 1-math::all(bool)
@@ -351,7 +352,6 @@ Procedure.l  Test_Vec3_operators()
   
   
   ProcedureReturn error  
-  
 EndProcedure
 Procedure.l  Test_Vec4_operators()
   Protected.l error =0
@@ -360,62 +360,62 @@ Procedure.l  Test_Vec4_operators()
   math::set_float(a, 1.0, 2.0, 3.0, 4.0)
   math::set_float(b, 4.0, 5.0, 6.0, 7.0)
   
-  math::let(  C, A, +, b)
+  math::add(  C, A, b)
   math::set_float(res, 5,7,9,11)
   math::equal(Bool, C, Res)
   error + 1- math::all(bool)
   
-  math::let(  D, B, -, A)
+  math::sub(  D, B, A)
   math::set_float(res, 3,3,3,3)
   math::equal(Bool, D, Res)
   error + 1-math::all(bool)
   
-  math::let(  E, A, *, b)
+  math::mul(  E, A, b)
   math::set_float(res, 4,10,18,28)
   math::equal(Bool, E, Res)
   error + 1-math::all(bool)
   
-  math::let(  f, B, /, A)
+  math::div(  f, B, A)
   math::set_float(res, 4, 2.5, 2, 7/4)
   math::equal(Bool, F, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar(  g, a, +, 1.0)
+  math::add_scalar(  g, a, 1.0)
   math::set_float(res, 2, 3, 4, 5)
   math::equal(Bool, g, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar(  h, B, -, 1.0)
+  math::sub_scalar(  h, B, 1.0)
   math::set_float(res, 3, 4, 5, 6)
   math::equal(Bool, h, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar( i, a, *, 2.0)
+  math::mul_scalar( i, a, 2.0)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, i, Res)
   error + 1-math::all(bool)
   
-  math::let_scalar( j, b, /, 2.0)
+  math::div_scalar( j, b, 2.0)
   math::set_float(res, 2, 2.5, 3, 3.5)
   math::equal(Bool, j, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( k, 1.0, +, a)
+  math::scalar_add( k, 1.0, a)
   math::set_float(res, 2,3,4,5)
   math::equal(Bool, k, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( l, 1.0, -, b)
+  math::scalar_sub( l, 1.0, b)
   math::set_float(res, -3,-4,-5,-6)
   math::equal(Bool, l, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( m, 2.0, *, a)
+  math::scalar_mul( m, 2.0, a)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, m, Res)
   error + 1-math::all(bool)
   
-  math::scalar_let( n, 2.0, /, b)
+  math::scalar_div( n, 2.0, b)
   math::set_float(res,0.5,2/5,2/6,2/7)
   math::equal(Bool, n, Res)
   error + 1-math::all(bool)
@@ -423,49 +423,49 @@ Procedure.l  Test_Vec4_operators()
   ; --------
   
   math::set(C,A)
-  math::let(C, C, +, b)
+  math::add(C, C, b)
   math::set_float(res, 5,7,9,11)
   math::equal(Bool, C, Res)
   error + 1- math::all(bool)
   
   math::set(D,B)
-  math::let(D, D, -, A)
+  math::sub(D, D, A)
   math::set_float(res, 3,3,3,3)
   math::equal(Bool, D, Res)
   error + 1-math::all(bool)
   
   math::set(E,A)
-  math::Let(E,  E, *, b)
+  math::mul(E,  E, b)
   math::set_float(res, 4,10,18,28)
   math::equal(Bool, E, Res)
   error + 1-math::all(bool)
   
   math::set(f,b)
-  math::Let(f,  f, /, A)
+  math::div(f,  f,  A)
   math::set_float(res, 4, 2.5, 2, 7/4)
   math::equal(Bool, F, Res)
   error + 1-math::all(bool)
   
   math::set(g,a)
-  math::let_scalar(g, g, +, 1.0)
+  math::add_scalar(g, g, 1.0)
   math::set_float(res, 2, 3, 4, 5)
   math::equal(Bool, g, Res)
   error + 1-math::all(bool)
   
   math::set(h,b)
-  math::let_scalar(h,  h, -, 1.0)
+  math::sub_scalar(h,  h,  1.0)
   math::set_float(res, 3, 4, 5, 6)
   math::equal(Bool, h, Res)
   error + 1-math::all(bool)
   
   math::set(i,a)
-  math::let_scalar(i, i, *, 2.0)
+  math::mul_scalar(i, i, 2.0)
   math::set_float(res, 2,4,6,8)
   math::equal(Bool, i, Res)
   error + 1-math::all(bool)
   
   math::set(j,b)
-  math::let_scalar(j, j, /, 2.0)
+  math::div_scalar(j, j, 2.0)
   math::set_float(res, 2, 2.5, 3, 3.5)
   math::equal(Bool, j, Res)
   error + 1-math::all(bool)
@@ -566,11 +566,11 @@ Macro matAxA(nb)
     math::set_float(N, 1.0)
     math::set_float(U, 2.0)
     
-    math::let_Scalar(p, N, *, 2.0)
+    math::mul_Scalar(p, N, 2.0)
     math::equal(mBool, P, M, epsilon)
     error + 1- math::all(mbool)
     
-    math::let_Scalar(q, m, /, 2.0)
+    math::div_Scalar(q, m, 2.0)
     math::equal(mBool, q, n, epsilon)
     error + 1- math::all(mBool)
     
@@ -609,10 +609,10 @@ Macro matAxB(nbA,nbB)
     Protected.f x = 1.0
     math::mul(a, m, u)
     math::mul(b, v, m)
-    math::Scalar_let(n, x, /, m)
-    math::let_Scalar(o, m, /, x)
-    math::Scalar_let(p, x, *, m)
-    math::let_Scalar(q, m, *, x)
+    math::Scalar_div(n, x, m)
+    math::div_Scalar(o, m, x)
+    math::Scalar_mul(p, x,  m)
+    math::mul_Scalar(q, m, x)
     
     math::notEqual(bool, m, q)
     Protected.l r = math::any(bool)
@@ -837,15 +837,15 @@ Procedure.l  test_cross()
   Protected.l error  
   Protected.math::vec3l bool
   
-  math::cross(cross1,a1,b1)
+  math::vec3_cross(cross1,a1,b1)
   ;Debug math::vec_string(a1)+" x "+math::vec_string(b1) +" = "+ math::vec_string(cross1)
-  math::let(cross1, cross1,-,u)
+  math::sub(cross1, cross1,u)
   math::Abs(cross1,cross1)
   math::lessThan(bool,cross1, epsilon)
   error + 1- math::all(bool)
   
-  math::cross(cross2,a2,b2)
-  math::let(cross2, cross2,-,v)
+  math::vec3_cross(cross2,a2,b2)
+  math::sub(cross2, cross2,v)
   math::Abs(cross2,cross2)
   math::lessThan(bool,cross2, epsilon)
   error + 1- math::all(bool)
@@ -1543,6 +1543,7 @@ call(matrix_transform)
 ;- ext_quaternion_type  -------------------
 Procedure.l test_ext_quaternion_type()
   Protected.l error
+  Debug "----"
   
   Protected.math::vec3 v100, v010, v001, vm100, v0m10, v00m1
   math::set_float(v100, 1,0,0)
@@ -1555,31 +1556,35 @@ Procedure.l test_ext_quaternion_type()
   Protected.math::vec3 v1,v2,v3,v4,v5
   Protected.math::vec3l bool
   Protected.math::quat q1,q2,q3,q4,q5
-  
   math::set(q1, v100, v010)
   math::mul(v1, q1, v100)
   math::equal(bool, v1, v010, 0.0001)
   error + 1 - math::all(bool)
+  Debug "a"+error
   
   math::mul(q2, q1, q1)
   math::mul(v2, q2, v100)
   math::equal(bool, v2, vm100, 0.0001)
   error + 1 - math::all(bool)
+  Debug "b"+error
   
   math::set(q3, v100, vm100)
   math::mul(v3, q3, v100)
   math::equal(bool, v3, vm100, 0.0001)
   error + 1 - math::all(bool)
+Debug "c"+error;   
   
   math::set(q4, v010, v0m10)
   math::mul(v4, q4, v010)
   math::equal(bool, v4, v0m10, 0.0001)
   error + 1 - math::all(bool)
+  Debug "d"+error
   
   math::set(q5, v001, v00m1)
   math::mul(v5, q5, v001)
   math::equal(bool, v5, v00m1, 0.0001)
   error + 1 - math::all(bool)
+  Debug "e"+error
   
   ProcedureReturn error
 EndProcedure
@@ -1603,10 +1608,10 @@ Procedure.l test_quaternion_common()
   
   ;conjugate
   math::set(a, v100, v010)
-  math::conjugate(c, a)
+  math::quat_conjugate(c, a)
   math::notEqual(bool, a,c)
   error +1- math::any(bool)  
-  math::conjugate(b, c)
+  math::quat_conjugate(b, c)
   math::equal(bool, a,b)
   error +1- math::all(bool)
   
@@ -1621,11 +1626,11 @@ Procedure.l test_quaternion_common()
   f4 = Degree( math::angle(q4) )
   error +1- math::equal_f(f4, 45, 0.001)
   
-  math::slerp(q3, q1,q2, 0.5)
+  math::quat_slerp(q3, q1,q2, 0.5)
   f3 = Degree( math::angle(q3) )
   error +1- math::equal_f(f3, 45, 0.001)
   
-  math::slerp(q4, q2,q1, 0.5)
+  math::quat_slerp(q4, q2,q1, 0.5)
   f4 = Degree( math::angle(q4) )
   error +1- math::equal_f(f4, 45, 0.001)
   
@@ -1651,26 +1656,26 @@ Procedure.l test_quaternion_exponential()
   
   ;log
   math::set(q, v100, v010)
-  math::Log(p, q)
+  math::quat_Log(p, q)
   math::notEqual(bool, q, p, 0.001)
   error +1- math::any(bool)
   
-  math::Exp(r, p)
+  math::quat_Exp(r, p)
   math::equal(bool, q, r, 0.001)
   error +1 - math::all(bool)
   
   ;pow
   math::set(q, v100, v010)
-  math::Pow(p, q,1)
+  math::quat_Pow(p, q,1)
   math::equal(bool, q,p,0.001)
   error +1 - math::all(bool)
   
-  math::Pow(p, q,2)
+  math::quat_Pow(p, q,2)
   math::mul(r, q,q)
   math::equal(bool, p,r,0.001)
   error +1 - math::all(bool)
   
-  math::sqrt(u, p)
+  math::quat_sqrt(u, p)
   math::equal (bool, q,u,0.001)
   error +1 - math::all(bool)
   
@@ -1754,20 +1759,30 @@ Procedure.l test_quaternion_transform()
   ;glm::quat test_quat = glm::quatLookAt(glm::normalize(center - eye), up);
   math::sub(v1, center, eye)
   math::normalize(v1,v1)
-  math::LookAt(q, v1, up)
+  math::quat_LookAt(q, v1, up)
   ;glm::quat test_mat = glm::conjugate(glm::quat_cast(glm::lookAt(eye, center, up)));
   math::LookAt(m, eye, center, up)
+  
+  ;CallDebugger
   math::set(p, m)
-  math::conjugate(p,p)
+  Debug math::string(p)
+  math::quat_conjugate(p,p)
+  Debug math::string(p)
   
   a = Abs( math::length(q) )
   error +1- math::equal_f(a, 1.0)
+  Debug "_a"+error
   
   ;glm::min(glm::length(test_quat + (-test_mat)), glm::length(test_quat + test_mat))
   math::sub(r, q, p)
   math::add(u, q, p)
+  Debug math::string(m)
+  Debug math::string(r)+" "+math::string(q)+" - " +math::string(p)
+  Debug math::string(u)+" "+math::string(q)+" + "+math::string(p)
   a= math::min_f( math::length(r), math::length(u) )
   error +1- math::equal_f(a, 0.0)
+  Debug a
+  Debug "_b"+error
   
   ProcedureReturn error
 EndProcedure
@@ -1950,11 +1965,11 @@ Procedure.l test_gtc_quaternion()
   
   ;euler
   math::set_float(q, 1,0,0,1)
-  roll = math::Roll(q)
-  pitch = math::Pitch(q)
-  yaw = math::Yaw(q)
+  roll = math::quat_Roll(q)
+  pitch = math::quat_Pitch(q)
+  yaw = math::quat_Yaw(q)
   
-  math::eulerAngles(v1,q)
+  math::quat_eulerAngles(v1,q)
   math::set_float(v2, pitch , yaw, roll)
   
   error +1 - math::all_equal(v1,v2, 0.000001)
@@ -1967,38 +1982,38 @@ Procedure.l test_gtc_quaternion()
   math::set_float(Y90rot, sqrt2, 0.0, sqrt2, 0.0)
   math::set_float(Y180rot, 0.0, 0.0, 1.0, 0.0)
   
-  math::slerp(id2, id, y90rot, 0)
+  math::quat_slerp(id2, id, y90rot, 0)
   error +1- math::all_equal(id, id2, 0.0001)
   
-  math::slerp(y90rot2, id, y90rot, 1.0)
+  math::quat_slerp(y90rot2, id, y90rot, 1.0)
   error +1- math::all_equal(y90rot, y90rot2, 0.0001)
   
-  math::slerp(y45rot1, id, y90rot, 0.5)
-  math::slerp(ym45rot2, y90rot, id, 0.5)
-  math::scalar_let(q, 0,-,y90rot)
-  math::slerp(Y45rot3, id, q, 0.5)
+  math::quat_slerp(y45rot1, id, y90rot, 0.5)
+  math::quat_slerp(ym45rot2, y90rot, id, 0.5)
+  math::scalar_sub(q, 0,y90rot)
+  math::quat_slerp(Y45rot3, id, q, 0.5)
   Y45angle3 = math::angle(y45rot3)
   error +1- math::equal_f(y45angle3, #PI*0.25, 0.0001)
   error +1- math::all_equal(Ym45rot2, y45rot3, 0.0001)
   
-  math::scalar_let(q, 0,-,y90rot)
-  math::slerp(y45rot4, q, id, 0.5)
-  math::scalar_let(q, 0,-,Y45rot4)
+  math::scalar_sub(q, 0,y90rot)
+  math::quat_slerp(y45rot4, q, id, 0.5)
+  math::scalar_sub(q, 0,Y45rot4)
   error +1- math::all_equal(Ym45rot2, q, 0.0001)
   
-  math::slerp(y90rot3, y90rot, y90rot, 0.5)
+  math::quat_slerp(y90rot3, y90rot, y90rot, 0.5)
   error +1- math::all_equal(y90rot, y90rot3, 0.0001)
   
-  math::scalar_let(q, 0,-,y90rot)
-  math::slerp(XZ90rot, id, q, 0.5)
+  math::scalar_sub(q, 0,y90rot)
+  math::quat_slerp(XZ90rot, id, q, 0.5)
   XZ90angle = math::angle(XZ90rot)
   error +1- math::equal_f(XZ90angle, #PI * 0.25)
   
   math::angleAxis(q, 0.1, v010)
-  math::slerp(almostid, id, q, 0.5)
+  math::quat_slerp(almostid, id, q, 0.5)
   
   math::set_float(q1,  -1,0,0,0)
-  math::slerp(q2,  q1, id, 0.5)
+  math::quat_slerp(q2,  q1, id, 0.5)
   error +1- math::equal_f( Pow(math::dot(id, q2),2), 1, 0.01)
   
   ;slerp spins
@@ -2006,25 +2021,25 @@ Procedure.l test_gtc_quaternion()
   math::set_float(Y90rot, sqrt2, 0.0, sqrt2, 0.0)
   math::set_float(Y180rot, 0.0, 0.0, 1.0, 0.0)
   
-  math::slerp(id2, id, id, 1.0, 1)
+  math::quat_slerp(id2, id, id, 1.0, 1)
   error +1- math::all_equal(id, id2, 0.0001)
   
-  math::slerp(id3, id, id, 1.0, 2)
+  math::quat_slerp(id3, id, id, 1.0, 2)
   error +1- math::all_equal(id, id3, 0.0001)
   
-  math::slerp(y90rot2, id, y90rot, 1.0,1)
-  math::scalar_let(y90rot2, 0,-,y90rot2)
+  math::quat_slerp(y90rot2, id, y90rot, 1.0,1)
+  math::scalar_sub(y90rot2, 0,y90rot2)
   error +1- math::all_equal(y90rot, y90rot2, 0.0001)
   
-  math::slerp(y90rot3, id, y90rot, 8.0 / 9.0, 2)
+  math::quat_slerp(y90rot3, id, y90rot, 8.0 / 9.0, 2)
   error +1- math::all_equal(id, y90rot3, 0.0001)
   
-  math::slerp(y90rot4, id, y90rot, 0.2, 1)
+  math::quat_slerp(y90rot4, id, y90rot, 0.2, 1)
   error +1- math::all_equal(y90rot, y90rot4, 0.0001)
   
-  math::slerp(ym45rot2, y90rot, id, 0.9, 1)
-  math::slerp(ym45rot3, y90rot, id, 0.5)
-  math::scalar_let(ym45rot2, 0,-,ym45rot2)
+  math::quat_slerp(ym45rot2, y90rot, id, 0.9, 1)
+  math::quat_slerp(ym45rot3, y90rot, id, 0.5)
+  math::scalar_sub(ym45rot2, 0,ym45rot2)
   error +1- math::all_equal(Ym45rot2, ym45rot3, 0.0001)
   
   math::angleAxis(q, #PI*0.5, v001)
@@ -2052,7 +2067,8 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 2
-; Folding = x---------
+; CursorPosition = 267
+; FirstLine = 263
+; Folding = ----------
 ; EnableXP
 ; EnablePurifier
